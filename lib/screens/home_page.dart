@@ -10,6 +10,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List filteredReciterList = recitersList;
   List filteredSurahList = surahList;
+  int? selectedReciterIndex;
+  int? selectedSurahIndex;
 
   void _filterReciter(String query) {
     setState(() {
@@ -93,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                 itemBuilder: (context, index) {
                   final reciter = filteredReciterList[index];
+                  final isSelected = selectedReciterIndex == index;
                   return ListTile(
                     title: Text(
                       reciter.name,
@@ -101,6 +104,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         fontSize: 18,
                       ),
                     ),
+                    tileColor: isSelected ? Colors.blue : null,
+                    onTap: () {
+                      setState(() {
+                        selectedReciterIndex = index;
+                      });
+
+                      /// Later: play audio from the API data
+                    },
                   );
                 }),
           )
@@ -129,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                 itemBuilder: (context, index) {
                   final surah = filteredSurahList[index];
+                  final isSelected = selectedSurahIndex == index;
                   return ListTile(
                     title: Text(
                       '${index + 1}\t\t\t${surah.name}',
@@ -137,6 +149,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         fontSize: 18,
                       ),
                     ),
+                    tileColor: isSelected ? Colors.blue : null,
+                    onTap: () {
+                      setState(() {
+                        selectedSurahIndex = index;
+                      });
+
+                      /// Later: play audio from the API data
+                    },
                   );
                 }),
           )
