@@ -65,19 +65,33 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
           ),
         ),
         Positioned(
-          top: -20,
+          top: -25,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _CircleButton(Icons.forward_10),
+              _MaterialCircleButton(Icons.forward_10),
               const SizedBox(width: 5),
-              _CircleButton(Icons.play_arrow, radius: 28),
+              _MaterialCircleButton(Icons.play_arrow,
+                  radius: 28, elevation: 10, color: Colors.purpleAccent),
               const SizedBox(width: 5),
-              _CircleButton(Icons.replay_10),
+              _MaterialCircleButton(
+                Icons.replay_10,
+              ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  ///adds a Material-like Shadow/drop effect for the custom _CircleButton below
+  Widget _MaterialCircleButton(IconData icon,
+      {double radius = 24, double elevation = 7, Color color = Colors.black}) {
+    return Material(
+      elevation: elevation,
+      shadowColor: color,
+      shape: CircleBorder(),
+      child: _CircleButton(icon, radius: radius),
     );
   }
 

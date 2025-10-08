@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 30),
             AudioPlayerSection(),
           ],
         ),
