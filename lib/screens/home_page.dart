@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.grey.withOpacity(0.9),
+      backgroundColor: Colors.white.withOpacity(.8),
       appBar: AppBar(
         title: const Text(
           'القرآن الكريم - المكتبة الصوتية',
@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 25),
             AudioPlayerSection(),
           ],
         ),
