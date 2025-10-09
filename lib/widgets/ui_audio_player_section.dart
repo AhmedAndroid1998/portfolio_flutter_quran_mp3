@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/Helpers.dart';
+
 class AudioPlayerSection extends StatefulWidget {
   const AudioPlayerSection({super.key});
 
@@ -100,7 +102,9 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
       radius: radius,
       backgroundColor: Colors.blue.shade900,
       child: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          Helpers.extractReciters();
+        },
         icon: Icon(
           icon,
           color: Colors.white,
