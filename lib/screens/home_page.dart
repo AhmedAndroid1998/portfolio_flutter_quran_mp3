@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quran_mp3/data/reciters_list.dart';
-import 'package:quran_mp3/data/surah_list.dart';
+import 'package:quran_mp3/data/surah_and_reciters_list.dart';
+import 'package:quran_mp3/services/Helpers.dart';
 import 'package:quran_mp3/widgets/ui_audio_player_section.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -9,32 +9,41 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List filteredReciterList = recitersList;
-  List filteredSurahList = surahList;
+  List<String> surahList = surahNames;
+  late Future<List<String>> recitersFutureList;
+  late List<String> reciterList;
   int? selectedReciterIndex;
   int? selectedSurahIndex;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Simulating async load of reciters from local JSON or API
+    recitersFutureList = Helpers.extractReciters();
+  }
 
   ///since the filtering logic for both reciters and surahs is the same,
   ///I generalized the method and added a toggle var
   void _filter(bool isReciter, String query) {
     setState(() {
-      List list = isReciter ? recitersList : surahList;
+      List<String> list = isReciter ? reciterList : surahList;
 
-      List filteredList = query.isEmpty
+      List<String> filteredList = query.isEmpty
           ? list
           : list
               .where((item) =>
-                      item.name.contains(query) ||
-                      item.name
+                      item.contains(query) ||
+                      item
                           .toLowerCase()
                           .contains(query.toLowerCase()) //safety for E search,
                   )
               .toList();
 
       if (isReciter) {
-        filteredReciterList = filteredList;
+        reciterList = filteredList;
       } else {
-        filteredSurahList = filteredList;
+        surahList = filteredList;
       }
     });
   }
@@ -64,11 +73,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Expanded(
                       child: _buildReciterSection(
-                          filteredReciterList, screenHeight, true)),
+                          recitersFutureList, screenHeight, true)),
                   const SizedBox(width: 5),
                   Expanded(
-                      child: _buildReciterSection(
-                          filteredSurahList, screenHeight, false)),
+                      child: _buildReciterSection(surahList, screenHeight, false)),
                 ],
               ),
             ),
@@ -80,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildReciterSection(List list,
+  Widget _buildReciterSection(dynamic list,
       [double? screenHeight, bool isRecitersList = true]) {
     return Card(
       elevation: 5,
@@ -93,48 +101,65 @@ class _MyHomePageState extends State<MyHomePage> {
             onChanged: (query) => _filter(isRecitersList, query), // 🔄 Filter live
           ),
           Expanded(
-            child: ListView.separated(
-                itemCount: list.length,
-                separatorBuilder: (context, index) => const Divider(
-                      height: 1,
-                      color: Colors.grey,
-                    ),
-                itemBuilder: (context, index) {
-                  final item = list[index];
-
-                  // Use ID for comparison - assuming your items have an 'id' field
-                  // If they don't, we'll use the name as a fallback
-                  final String itemId = item.name;
-
-                  final bool isSelected = isRecitersList
-                      ? selectedReciterIndex == index
-                      : selectedSurahIndex == index;
-
-                  return ListTile(
-                    title: Text(
-                      isRecitersList ? item.name : '${index + 1}\t\t\t${item.name}',
-                      textDirection: TextDirection.rtl,
-                      style: const TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                    tileColor: isSelected ? Colors.blue : null,
-                    onTap: () {
-                      setState(() {
-                        if (isRecitersList) {
-                          selectedReciterIndex = index;
+              //detect whether you’re building the reciters or the surahs list.
+              // For reciters, use a FutureBuilder; for surahs, keep it static.
+              child: isRecitersList
+                  ? FutureBuilder<List<String>>(
+                      future: recitersFutureList,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Center(child: Text('No reciters found'));
                         } else {
-                          selectedSurahIndex = index;
+                          reciterList = snapshot.data!;
+                          return _buildListView(reciterList, isRecitersList);
                         }
-                      });
-
-                      /// Later: play audio from the API data
-                    },
-                  );
-                }),
-          )
+                      },
+                    )
+                  : _buildListView(list, isRecitersList))
         ],
       ),
     );
+  }
+
+  Widget _buildListView(List<String> list, bool isRecitersList) {
+    return ListView.separated(
+        itemCount: list.length,
+        separatorBuilder: (context, index) => const Divider(
+              height: 1,
+              color: Colors.grey,
+            ),
+        itemBuilder: (context, index) {
+          final item = list[index];
+
+          final bool isSelected = isRecitersList
+              ? selectedReciterIndex == index
+              : selectedSurahIndex == index;
+
+          return ListTile(
+            title: Text(
+              isRecitersList ? item : '${index + 1}\t\t\t$item',
+              textDirection: TextDirection.rtl,
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            tileColor: isSelected ? Colors.blue : null,
+            onTap: () {
+              setState(() {
+                if (isRecitersList) {
+                  selectedReciterIndex = index;
+                } else {
+                  selectedSurahIndex = index;
+                }
+              });
+
+              /// Later: play audio from the API data
+            },
+          );
+        });
   }
 }

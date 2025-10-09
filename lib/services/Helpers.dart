@@ -13,7 +13,13 @@ final class Helpers {
     List<String> recitersNames = [];
     for (var r in reciters) {
       for (var m in r['moshaf']) {
-        if (m['surah_total'] == 114) recitersNames.add(r['name']);
+        ///I'll just extract the reciters who have the full quran record (114 surah)
+        ///to avoid an expected error (chosing a non-recorded surah for a reciter)
+        if (m['surah_total'] == 114) {
+          //If a reciter has more than mushaf (e.g الحصري أو المنشاوي), append that to the name for clarity
+          final mushafType = (m['id'] != r['id'] ? ' -  ${m['name']}' : '');
+          recitersNames.add(r['name'] + mushafType);
+        }
       }
     }
 
