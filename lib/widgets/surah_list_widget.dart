@@ -11,7 +11,7 @@ class SurahListWidget extends StatefulWidget {
 
 class _SurahListWidgetState extends State<SurahListWidget> {
   List<String> surahList = surahNames;
-  int? selectedSurahIndex;
+  String? selectedSurah;
   List<String> filteredSurahList = [];
 
   @override
@@ -56,10 +56,10 @@ class _SurahListWidgetState extends State<SurahListWidget> {
               child: buildListView(
                   list: filteredSurahList,
                   isRecitersList: false,
-                  selectedItemIndex: selectedSurahIndex,
+                  selectedItem: selectedSurah,
                   onTap: (i) {
                     setState(() {
-                      selectedSurahIndex = i;
+                      selectedSurah = filteredSurahList[i];
                     });
                   }))
         ],

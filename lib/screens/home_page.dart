@@ -51,12 +51,12 @@ class _MyHomePageState extends State<MyHomePage> {
 Widget buildListView({
   required List<String> list,
   required bool isRecitersList,
-  required int? selectedItemIndex,
+  required String? selectedItem,
   required void Function(int) onTap,
 }) {
   return ListView.separated(
       itemCount: list.length,
-      separatorBuilder: (context, index) => const Divider(
+      separatorBuilder: (_, __) => const Divider(
             height: 1,
             color: Colors.grey,
           ),
@@ -71,8 +71,10 @@ Widget buildListView({
                 fontSize: 18,
               ),
             ),
-            tileColor: selectedItemIndex == index ? Colors.blue : null,
-            onTap: () => onTap
+            //we compared with value instead of index, because index
+            //will not match the correct item due to shortening & re-ordering caused by the filter to to the filteredList
+            tileColor: selectedItem == item ? Colors.blue : null,
+            onTap: () => onTap(index)
 
             /// Later: play audio from the API data
             );

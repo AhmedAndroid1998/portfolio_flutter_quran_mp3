@@ -12,7 +12,7 @@ class ReciterListWidget extends StatefulWidget {
 class _ReciterListWidgetState extends State<ReciterListWidget> {
   late Future<List<String>> recitersFutureList;
   List<String> reciterList = [];
-  int? selectedReciterIndex;
+  String? selectedReciter;
   List<String> filteredReciterList = [];
 
   @override
@@ -72,10 +72,10 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
                 return buildListView(
                     list: filteredReciterList,
                     isRecitersList: true,
-                    selectedItemIndex: selectedReciterIndex,
+                    selectedItem: selectedReciter,
                     onTap: (i) {
                       setState(() {
-                        selectedReciterIndex = i;
+                        selectedReciter = filteredReciterList[i];
                       });
                     });
               }
