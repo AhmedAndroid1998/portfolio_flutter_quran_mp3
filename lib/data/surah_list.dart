@@ -1,6 +1,6 @@
 // data/surah_list.dart
-import '../models/surah.dart';
 
+/*
 const List<Surah> surahList = [
   Surah(num: 1, name: 'الفاتحة'),
   Surah(num: 2, name: 'البقرة'),
@@ -117,3 +117,4 @@ const List<Surah> surahList = [
   Surah(num: 113, name: 'الفلق'),
   Surah(num: 114, name: 'الناس'),
 ];
+*/

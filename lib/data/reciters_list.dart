@@ -1,5 +1,4 @@
-import '../models/reciter.dart';
-
+/*
 const List<Reciter> recitersList = [
   Reciter(name: 'أحمد العجمي'),
   Reciter(name: 'أحمد بن علي'),
@@ -48,3 +47,5 @@ const List<Reciter> recitersList = [
   Reciter(name: 'ماهر المعيقلي – المسجد الحرام'),
   Reciter(name: 'ياسر الدوسري'),
 ];
+
+ */
