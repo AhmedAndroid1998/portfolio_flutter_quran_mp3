@@ -23,9 +23,9 @@ final class Helpers {
 
           var mushafType = (m['id'] != r['id'] ? '${m['name']}' : '');
           if (mushafType.isNotEmpty) {
-            print('✅ $mushafType');
+            // print('✅ $mushafType');
             mushafType = ' (${cleanString(mushafType)})';
-            print('✅✅✅ $mushafType');
+            // print('✅✅✅ $mushafType');
           }
           recitersNames.add(r['name'] + mushafType);
         }

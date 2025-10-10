@@ -11,27 +11,30 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<String> surahList = surahNames;
   late Future<List<String>> recitersFutureList;
-  late List<String> reciterList;
+  List<String> reciterList = [];
   int? selectedReciterIndex;
   int? selectedSurahIndex;
+
+  List<String> filteredReciterList = [];
+  List<String> filteredSurahList = [];
 
   @override
   void initState() {
     super.initState();
-
+    filteredSurahList = surahList;
     // Simulating async load of reciters from local JSON or API
     recitersFutureList = Helpers.extractReciters();
   }
 
   ///since the filtering logic for both reciters and surahs is the same,
   ///I generalized the method and added a toggle var
-  void _filter(bool isReciter, String query) {
+  void _filter(bool isReciterList, String query) {
     setState(() {
-      List<String> list = isReciter ? reciterList : surahList;
+      List<String> listToFilter = isReciterList ? reciterList : surahList;
 
       List<String> filteredList = query.isEmpty
-          ? list
-          : list
+          ? listToFilter
+          : listToFilter
               .where((item) =>
                       item.contains(query) ||
                       item
@@ -40,10 +43,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   )
               .toList();
 
-      if (isReciter) {
-        reciterList = filteredList;
+      if (isReciterList) {
+        filteredReciterList = filteredList;
+        print('✅ filteredReciterList: $filteredReciterList');
       } else {
-        surahList = filteredList;
+        filteredSurahList = filteredList;
       }
     });
   }
@@ -76,7 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           recitersFutureList, screenHeight, true)),
                   const SizedBox(width: 5),
                   Expanded(
-                      child: _buildReciterSection(surahList, screenHeight, false)),
+                      child: _buildReciterSection(
+                          filteredSurahList, screenHeight, false)),
                 ],
               ),
             ),
@@ -88,8 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  ///I use it also to build the surah list section since the layout and behavior is analogous
   Widget _buildReciterSection(dynamic list,
       [double? screenHeight, bool isRecitersList = true]) {
+    print('✅✅✅ _buildReciterSection() is triggered');
     return Card(
       elevation: 5,
       child: Column(
@@ -101,31 +108,37 @@ class _MyHomePageState extends State<MyHomePage> {
             onChanged: (query) => _filter(isRecitersList, query), // 🔄 Filter live
           ),
           Expanded(
-              //detect whether you’re building the reciters or the surahs list.
-              // For reciters, use a FutureBuilder; for surahs, keep it static.
-              child: isRecitersList
-                  ? FutureBuilder<List<String>>(
-                      future: recitersFutureList,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return const Center(child: Text('No reciters found'));
-                        } else {
+            //detect whether you’re building the reciters or the surahs list.
+            // For reciters, use a FutureBuilder; for surahs, keep it static.
+            child: isRecitersList
+                ? FutureBuilder<List<String>>(
+                    future: recitersFutureList,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(child: Text('No reciters found'));
+                      } else {
+                        // ✅ Assign once only if reciterList is empty
+                        if (reciterList.isEmpty) {
                           reciterList = snapshot.data!;
-                          return _buildListView(reciterList, isRecitersList);
+                          filteredReciterList = reciterList;
                         }
-                      },
-                    )
-                  : _buildListView(list, isRecitersList))
+                        return _buildListView(isRecitersList);
+                      }
+                    },
+                  )
+                : _buildListView(isRecitersList),
+          )
         ],
       ),
     );
   }
 
-  Widget _buildListView(List<String> list, bool isRecitersList) {
+  Widget _buildListView(bool isRecitersList) {
+    final list = isRecitersList ? filteredReciterList : filteredSurahList;
     return ListView.separated(
         itemCount: list.length,
         separatorBuilder: (context, index) => const Divider(
@@ -141,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           return ListTile(
             title: Text(
-              isRecitersList ? item : '${index + 1}\t\t\t$item',
+              isRecitersList ? item : '${surahList.indexOf(item) + 1}\t\t\t$item',
               textDirection: TextDirection.rtl,
               style: const TextStyle(
                 fontSize: 18,
