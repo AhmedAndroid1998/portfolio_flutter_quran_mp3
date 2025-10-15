@@ -14,7 +14,7 @@ final class Helpers {
     for (var r in reciters) {
       for (var m in r['moshaf']) {
         ///I'll just extract the reciters who have the full quran record (114 surah)
-        ///to avoid an expected error (chosing a non-recorded surah for a reciter)
+        ///to avoid an expected error (choosing a non-recorded surah for a reciter)
         if (m['surah_total'] == 114) {
           var mushafType = (m['id'] != r['id'] ? '${m['name']}' : '');
           if (mushafType.isNotEmpty) {
