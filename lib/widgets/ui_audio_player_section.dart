@@ -1,6 +1,5 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-
-import '../services/Helpers.dart';
 
 class AudioPlayerSection extends StatefulWidget {
   const AudioPlayerSection({super.key});
@@ -12,6 +11,7 @@ class AudioPlayerSection extends StatefulWidget {
 class _AudioPlayerSectionState extends State<AudioPlayerSection> {
   double _currentValue = 0;
   final double _maxValue = 60;
+  var audioPlayer = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -71,13 +71,25 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _MaterialCircleButton(Icons.forward_10),
-              const SizedBox(width: 5),
-              _MaterialCircleButton(Icons.play_arrow,
-                  radius: 28, elevation: 10, color: Colors.purpleAccent),
+              _MaterialCircleButton(
+                icon: Icons.forward_10,
+                onPressed: () {},
+              ),
               const SizedBox(width: 5),
               _MaterialCircleButton(
-                Icons.replay_10,
+                  icon: Icons.play_arrow,
+                  radius: 28,
+                  elevation: 10,
+                  color: Colors.purpleAccent,
+                  onPressed: () {
+                    playSurah(
+                        surahNumber: 1,
+                        server: 'https://server12.mp3quran.net/maher/');
+                  }),
+              const SizedBox(width: 5),
+              _MaterialCircleButton(
+                icon: Icons.replay_10,
+                onPressed: () {},
               ),
             ],
           ),
@@ -87,29 +99,39 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
   }
 
   ///adds a Material-like Shadow/drop effect for the custom _CircleButton below
-  Widget _MaterialCircleButton(IconData icon,
-      {double radius = 24, double elevation = 7, Color color = Colors.black}) {
+  Widget _MaterialCircleButton(
+      {required IconData icon,
+      required void Function()? onPressed,
+      double radius = 24,
+      double elevation = 7,
+      Color color = Colors.black}) {
     return Material(
       elevation: elevation,
       shadowColor: color,
       shape: CircleBorder(),
-      child: _CircleButton(icon, radius: radius),
+      child: _CircleButton(icon, onPressed, radius: radius),
     );
   }
 
-  Widget _CircleButton(IconData icon, {double radius = 24}) {
+  Widget _CircleButton(IconData icon, void Function()? onPressed,
+      {double radius = 24}) {
     return CircleAvatar(
       radius: radius,
       backgroundColor: Colors.blue.shade900,
       child: IconButton(
-        onPressed: () {
-          Helpers.extractReciters();
-        },
+        onPressed: onPressed,
         icon: Icon(
           icon,
           color: Colors.white,
         ),
       ),
     );
+  }
+
+  Future<void> playSurah({required int surahNumber, required String server}) async {
+    final surahStr = surahNumber.toString().padLeft(3, '0');
+    final audioUrl = '$server$surahStr.mp3';
+    await audioPlayer.play(UrlSource(audioUrl));
+    print('✅✅✅ audioUrl: $audioUrl');
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 ///A utility class to provide procedure methods
 final class Helpers {
+  static List<String> recitersRecordings = [];
   static Future<List<String>> extractReciters() async {
     //the following json file was the response to the URL query: https://www.mp3quran.net/api/v3/reciters?language=ar
     final jsonString =
@@ -17,22 +18,17 @@ final class Helpers {
         ///to avoid an expected error (chosing a non-recorded surah for a reciter)
         if (m['surah_total'] == 114) {
           //If a reciter has more than mushaf (e.g الحصري أو المنشاوي), append that to the name for clarity
-          //var mushafType = m['name'];
-          // print('✅ $mushafType');
-          //mushafType = _cleanString(mushafType);
-
           var mushafType = (m['id'] != r['id'] ? '${m['name']}' : '');
           if (mushafType.isNotEmpty) {
-            // print('✅ $mushafType');
             mushafType = ' (${cleanString(mushafType)})';
-            // print('✅✅✅ $mushafType');
           }
           recitersNames.add(r['name'] + mushafType);
+
+          recitersRecordings.add(m['server']);
         }
       }
     }
 
-    // print('✅✅✅✅✅ ${recitersNames.length}');
     return recitersNames;
   }
 
