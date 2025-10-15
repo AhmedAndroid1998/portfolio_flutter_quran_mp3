@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:quran_mp3/controllers/audio_controller.dart';
+import 'package:quran_mp3/controllers/reciters_controller.dart';
 
 class AudioPlayerSection extends StatefulWidget {
   const AudioPlayerSection({super.key});
@@ -10,6 +13,8 @@ class AudioPlayerSection extends StatefulWidget {
 class _AudioPlayerSectionState extends State<AudioPlayerSection> {
   double _currentValue = 0;
   final double _maxValue = 60;
+  final recitersCtrl = Get.find<RecitersController>();
+  final audioCtrl = Get.find<AudioController>();
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +29,14 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
             elevation: 10,
             child: Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 30.0),
-                  child: Text(
-                    'اختر اسم الشيخ والسورة',
-                    style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+                Padding(
+                  padding: const EdgeInsets.only(top: 30.0),
+                  child: Obx(
+                    () => Text(
+                      audioCtrl.descriptionText.value,
+                      style:
+                          const TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+                    ),
                   ),
                 ),
                 Directionality(
@@ -74,12 +82,17 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                 onPressed: () {},
               ),
               const SizedBox(width: 5),
-              _MaterialCircleButton(
-                icon: Icons.play_arrow,
-                radius: 28,
-                elevation: 10,
-                color: Colors.purpleAccent,
-                onPressed: () {},
+              Obx(
+                () => _MaterialCircleButton(
+                  icon: audioCtrl.playIcon.value,
+                  radius: 28,
+                  elevation: 10,
+                  color: Colors.purpleAccent,
+                  onPressed: () {
+                    audioCtrl.isPlaying.toggle();
+                    audioCtrl.togglePlayback();
+                  },
+                ),
               ),
               const SizedBox(width: 5),
               _MaterialCircleButton(icon: Icons.replay_10, onPressed: () {}),

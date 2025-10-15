@@ -10,6 +10,7 @@ class RecitersController extends GetxController {
   ///The key is the reciter and the value is the base url for the 'server' where all of his recitations are stored
   final Map<String, String> recitations = <String, String>{};
   Future<Map<String, String>> extractReciters() async {
+    // print('✅✅✅✅✅ extractReciters() is  called');
     //the following json file was the response to the URL query: https://www.mp3quran.net/api/v3/reciters?language=ar
     final jsonString =
         await rootBundle.loadString('assets/data/mp3_quran_API_reciters_list.json');
@@ -19,7 +20,7 @@ class RecitersController extends GetxController {
     for (var r in reciters) {
       for (var m in r['moshaf']) {
         ///I'll just extract the reciters who have the full quran record (114 surah)
-        ///to avoid an expected error (chosing a non-recorded surah for a reciter)
+        ///to avoid an expected error (choosing a non-recorded surah for a reciter)
         if (m['surah_total'] == 114) {
           var mushafType = (m['id'] != r['id'] ? '${m['name']}' : '');
           if (mushafType.isNotEmpty) {
@@ -53,32 +54,4 @@ class RecitersController extends GetxController {
       so I just handled them
 */
   }
-  /*
-
-  /// Removes symbols but keeps spaces, and eliminates duplicated phrase patterns.
-  static String _cleanString(String input) {
-    // 1️⃣ Remove non-letter symbols (keep spaces)
-    String lettersOnly =
-        input.replaceAll(RegExp(r'[^a-zA-Z\u0600-\u06FF ]'), '').trim();
-
-    // 2️⃣ Normalize multiple spaces into a single space
-    lettersOnly = lettersOnly.replaceAll(RegExp(r'\s+'), ' ');
-
-    // 3️⃣ Remove repeated phrase (case-insensitive, allows spaces)
-    return _removeDuplicateWordIgnoreCase(lettersOnly);
-  }
-
-  static String _removeDuplicateWordIgnoreCase(String input) {
-    final lower = input.toLowerCase().trim();
-
-    //  ✅ Updated regex: allow spaces inside repeated phrase
-    final match = RegExp(r'^([\u0600-\u06FFa-zA-Z ]+?)\1+$').firstMatch(lower);
-
-    if (match != null) {
-      final length = match.group(1)!.length;
-      return input.substring(0, length).trim();
-    }
-    return input;
-  }
-   */
 }
