@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
+import 'package:quran_mp3/controllers/audio_controller.dart';
 
 import 'screens/home_page.dart';
 
 void main() {
-  runApp(const QuranAudioLibraryApp());
+  // Register the controller globally once
+  Get.put(AudioController());
+  runApp(GetMaterialApp(
+    home: QuranAudioLibraryApp(),
+  ));
 }
 
 class QuranAudioLibraryApp extends StatelessWidget {

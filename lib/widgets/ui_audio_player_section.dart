@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../services/Helpers.dart';
-
 class AudioPlayerSection extends StatefulWidget {
   const AudioPlayerSection({super.key});
 
@@ -71,14 +69,20 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _MaterialCircleButton(Icons.forward_10),
-              const SizedBox(width: 5),
-              _MaterialCircleButton(Icons.play_arrow,
-                  radius: 28, elevation: 10, color: Colors.purpleAccent),
+              _MaterialCircleButton(
+                icon: Icons.forward_10,
+                onPressed: () {},
+              ),
               const SizedBox(width: 5),
               _MaterialCircleButton(
-                Icons.replay_10,
+                icon: Icons.play_arrow,
+                radius: 28,
+                elevation: 10,
+                color: Colors.purpleAccent,
+                onPressed: () {},
               ),
+              const SizedBox(width: 5),
+              _MaterialCircleButton(icon: Icons.replay_10, onPressed: () {}),
             ],
           ),
         ),
@@ -87,24 +91,27 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
   }
 
   ///adds a Material-like Shadow/drop effect for the custom _CircleButton below
-  Widget _MaterialCircleButton(IconData icon,
-      {double radius = 24, double elevation = 7, Color color = Colors.black}) {
+  Widget _MaterialCircleButton(
+      {required IconData icon,
+      required void Function()? onPressed,
+      double radius = 24,
+      double elevation = 7,
+      Color color = Colors.black}) {
     return Material(
       elevation: elevation,
       shadowColor: color,
       shape: CircleBorder(),
-      child: _CircleButton(icon, radius: radius),
+      child: _CircleButton(icon: icon, onPressed: onPressed, radius: radius),
     );
   }
 
-  Widget _CircleButton(IconData icon, {double radius = 24}) {
+  Widget _CircleButton(
+      {required IconData icon, void Function()? onPressed, double radius = 24}) {
     return CircleAvatar(
       radius: radius,
       backgroundColor: Colors.blue.shade900,
       child: IconButton(
-        onPressed: () {
-          Helpers.extractReciters();
-        },
+        onPressed: onPressed,
         icon: Icon(
           icon,
           color: Colors.white,

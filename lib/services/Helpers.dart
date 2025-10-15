@@ -16,16 +16,9 @@ final class Helpers {
         ///I'll just extract the reciters who have the full quran record (114 surah)
         ///to avoid an expected error (chosing a non-recorded surah for a reciter)
         if (m['surah_total'] == 114) {
-          //If a reciter has more than mushaf (e.g الحصري أو المنشاوي), append that to the name for clarity
-          //var mushafType = m['name'];
-          // print('✅ $mushafType');
-          //mushafType = _cleanString(mushafType);
-
           var mushafType = (m['id'] != r['id'] ? '${m['name']}' : '');
           if (mushafType.isNotEmpty) {
-            // print('✅ $mushafType');
             mushafType = ' (${cleanString(mushafType)})';
-            // print('✅✅✅ $mushafType');
           }
           recitersNames.add(r['name'] + mushafType);
         }

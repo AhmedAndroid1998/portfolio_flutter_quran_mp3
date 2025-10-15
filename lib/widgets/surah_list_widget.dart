@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:quran_mp3/controllers/audio_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
 import 'package:quran_mp3/screens/home_page.dart';
 
@@ -13,6 +15,7 @@ class _SurahListWidgetState extends State<SurahListWidget> {
   List<String> surahList = surahNames;
   String? selectedSurah;
   List<String> filteredSurahList = [];
+  final audioCtrl = Get.find<AudioController>();
 
   @override
   void initState() {
@@ -51,17 +54,18 @@ class _SurahListWidgetState extends State<SurahListWidget> {
             onChanged: (query) => _filterSurah(query), // 🔄 Filter live
           ),
           Expanded(
-              //detect whether you’re building the reciters or the surahs list.
-              // For reciters, use a FutureBuilder; for surahs, keep it static.
-              child: buildListView(
+            //detect whether you’re building the reciters or the surahs list.
+            // For reciters, use a FutureBuilder; for surahs, keep it static.
+            child: Obx(
+              () => buildListView(
                   list: filteredSurahList,
                   isRecitersList: false,
-                  selectedItem: selectedSurah,
+                  selectedItem: audioCtrl.selectedSurah.value,
                   onTap: (i) {
-                    setState(() {
-                      selectedSurah = filteredSurahList[i];
-                    });
-                  }))
+                    audioCtrl.setSurah(filteredSurahList[i]);
+                  }),
+            ),
+          )
         ],
       ),
     );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:quran_mp3/controllers/audio_controller.dart';
 import 'package:quran_mp3/screens/home_page.dart';
 import 'package:quran_mp3/services/Helpers.dart';
 
@@ -14,6 +16,7 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
   List<String> reciterList = [];
   String? selectedReciter;
   List<String> filteredReciterList = [];
+  final audioCtrl = Get.find<AudioController>();
 
   @override
   void initState() {
@@ -69,15 +72,15 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
                   reciterList = snapshot.data!;
                   filteredReciterList = reciterList;
                 }
-                return buildListView(
-                    list: filteredReciterList,
-                    isRecitersList: true,
-                    selectedItem: selectedReciter,
-                    onTap: (i) {
-                      setState(() {
-                        selectedReciter = filteredReciterList[i];
-                      });
-                    });
+                return Obx(
+                  () => buildListView(
+                      list: filteredReciterList,
+                      isRecitersList: true,
+                      selectedItem: audioCtrl.selectedReciter.value,
+                      onTap: (i) {
+                        audioCtrl.setReciter(filteredReciterList[i]);
+                      }),
+                );
               }
             },
           ))
