@@ -1,10 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 ///A utility class to provide procedure methods
-final class Helpers {
-  static Future<List<String>> extractReciters() async {
+///
+
+class RecitersController extends GetxController {
+  ///The key is the reciter and the value is the base url for the 'server' where all of his recitations are stored
+  final Map<String, String> recitations = <String, String>{};
+  Future<Map<String, String>> extractReciters() async {
     //the following json file was the response to the URL query: https://www.mp3quran.net/api/v3/reciters?language=ar
     final jsonString =
         await rootBundle.loadString('assets/data/mp3_quran_API_reciters_list.json');
@@ -14,19 +19,19 @@ final class Helpers {
     for (var r in reciters) {
       for (var m in r['moshaf']) {
         ///I'll just extract the reciters who have the full quran record (114 surah)
-        ///to avoid an expected error (choosing a non-recorded surah for a reciter)
+        ///to avoid an expected error (chosing a non-recorded surah for a reciter)
         if (m['surah_total'] == 114) {
           var mushafType = (m['id'] != r['id'] ? '${m['name']}' : '');
           if (mushafType.isNotEmpty) {
             mushafType = ' (${cleanString(mushafType)})';
           }
-          recitersNames.add(r['name'] + mushafType);
+          recitations[r['name'] + mushafType] = m['server'];
         }
       }
     }
 
     // print('✅✅✅✅✅ ${recitersNames.length}');
-    return recitersNames;
+    return recitations;
   }
 
   ///Fixing some typo issues in the API data
@@ -48,7 +53,6 @@ final class Helpers {
       so I just handled them
 */
   }
-
   /*
 
   /// Removes symbols but keeps spaces, and eliminates duplicated phrase patterns.

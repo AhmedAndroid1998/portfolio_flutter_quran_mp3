@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
+import 'package:quran_mp3/controllers/reciters_controller.dart';
 import 'package:quran_mp3/screens/home_page.dart';
-import 'package:quran_mp3/services/Helpers.dart';
 
 class ReciterListWidget extends StatefulWidget {
   const ReciterListWidget({super.key});
@@ -12,16 +12,18 @@ class ReciterListWidget extends StatefulWidget {
 }
 
 class _ReciterListWidgetState extends State<ReciterListWidget> {
-  late Future<List<String>> recitersFutureList;
+  ///The key is the reciter and the value is the base url for the 'server' where all of his recitations are stored
+  late Future<Map<String, String>> recitationsFutureList;
   List<String> reciterList = [];
   String? selectedReciter;
   List<String> filteredReciterList = [];
   final audioCtrl = Get.find<AudioController>();
+  final recitersCtrl = Get.find<RecitersController>();
 
   @override
   void initState() {
     super.initState();
-    recitersFutureList = Helpers.extractReciters();
+    recitationsFutureList = recitersCtrl.extractReciters();
   }
 
   ///since the filtering logic for both reciters and surahs is the same,
@@ -57,8 +59,8 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
           Expanded(
               //detect whether you’re building the reciters or the surahs list.
               // For reciters, use a FutureBuilder; for surahs, keep it static.
-              child: FutureBuilder<List<String>>(
-            future: recitersFutureList,
+              child: FutureBuilder<Map<String, String>>(
+            future: recitationsFutureList,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -69,7 +71,7 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
               } else {
                 // ✅ Assign once only if reciterList is empty
                 if (reciterList.isEmpty) {
-                  reciterList = snapshot.data!;
+                  reciterList = snapshot.data!.keys.toList();
                   filteredReciterList = reciterList;
                 }
                 return Obx(
@@ -79,6 +81,7 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
                       selectedItem: audioCtrl.selectedReciter.value,
                       onTap: (i) {
                         audioCtrl.setReciter(filteredReciterList[i]);
+                        print(recitersCtrl.recitations[filteredReciterList[i]]);
                       }),
                 );
               }
