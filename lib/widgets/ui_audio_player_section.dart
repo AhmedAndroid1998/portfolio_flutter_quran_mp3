@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
-import 'package:quran_mp3/controllers/reciters_controller.dart';
 
 class AudioPlayerSection extends StatefulWidget {
   const AudioPlayerSection({super.key});
@@ -13,7 +13,7 @@ class AudioPlayerSection extends StatefulWidget {
 class _AudioPlayerSectionState extends State<AudioPlayerSection> {
   double _currentValue = 0;
   final double _maxValue = 60;
-  final recitersCtrl = Get.find<RecitersController>();
+
   final audioCtrl = Get.find<AudioController>();
 
   @override
@@ -89,8 +89,21 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                   elevation: 10,
                   color: Colors.purpleAccent,
                   onPressed: () {
-                    audioCtrl.isPlaying.toggle();
-                    audioCtrl.togglePlayback();
+                    if (audioCtrl.selectedSurah.isEmpty ||
+                        audioCtrl.selectedReciter.isEmpty) {
+                      Fluttertoast.showToast(
+                        msg: "رجاء، اختر الشيخ والسورة",
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.redAccent,
+                      );
+                    } else {
+                      audioCtrl.isResumed.toggle();
+                      audioCtrl.playIcon.value =
+                          audioCtrl.isResumed.value ? Icons.pause : Icons.play_arrow;
+                      audioCtrl.isResumed.isTrue
+                          ? audioCtrl.play()
+                          : audioCtrl.pause();
+                    }
                   },
                 ),
               ),

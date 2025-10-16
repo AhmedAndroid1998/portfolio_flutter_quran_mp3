@@ -10,7 +10,6 @@ class RecitersController extends GetxController {
   ///The key is the reciter and the value is the base url for the 'server' where all of his recitations are stored
   final Map<String, String> recitations = <String, String>{};
   Future<Map<String, String>> extractReciters() async {
-    // print('✅✅✅✅✅ extractReciters() is  called');
     //the following json file was the response to the URL query: https://www.mp3quran.net/api/v3/reciters?language=ar
     final jsonString =
         await rootBundle.loadString('assets/data/mp3_quran_API_reciters_list.json');
@@ -31,7 +30,6 @@ class RecitersController extends GetxController {
       }
     }
 
-    // print('✅✅✅✅✅ ${recitersNames.length}');
     return recitations;
   }
 

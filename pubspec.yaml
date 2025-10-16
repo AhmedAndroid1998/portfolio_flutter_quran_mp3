@@ -39,6 +39,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   get: ^4.6.6
+  audioplayers: ^5.2.1
+  fluttertoast: ^8.2.5
 
 dev_dependencies:
   flutter_test:
