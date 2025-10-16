@@ -79,7 +79,9 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
             children: [
               _MaterialCircleButton(
                 icon: Icons.forward_10,
-                onPressed: () {},
+                onPressed: () {
+                  audioCtrl.seekForward();
+                },
               ),
               const SizedBox(width: 5),
               Obx(
@@ -108,7 +110,12 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                 ),
               ),
               const SizedBox(width: 5),
-              _MaterialCircleButton(icon: Icons.replay_10, onPressed: () {}),
+              _MaterialCircleButton(
+                icon: Icons.replay_10,
+                onPressed: () {
+                  audioCtrl.seekBackward();
+                },
+              ),
             ],
           ),
         ),

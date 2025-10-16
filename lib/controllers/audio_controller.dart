@@ -21,10 +21,23 @@ class AudioController extends GetxController {
 
   late final AudioPlayer _audioPlayer;
 
+  var currentPosition = Duration.zero.obs;
+  var totalDuration = Duration.zero.obs;
+  var isCompleted = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     _audioPlayer = AudioPlayer();
+
+    _audioPlayer.onDurationChanged.listen((d) => totalDuration.value = d);
+    _audioPlayer.onPositionChanged.listen((p) => currentPosition.value = p);
+    _audioPlayer.onPlayerComplete.listen((_) {
+      print('✅✅✅✅✅✅✅✅✅ onPlayerComplete');
+      isCompleted.value = true;
+      isResumed.value = false;
+      playIcon.value = Icons.play_arrow;
+    });
   }
 
   void setSurah(String surahName) {
@@ -54,16 +67,21 @@ class AudioController extends GetxController {
   }
 
   Future<void> play() async {
-    if (isNewSelection.isTrue) {
-      playNew();
+    // if playback previously completed, restart from beginning
+    if (isCompleted.isTrue) {
+      await playNew();
+      isCompleted.value = false;
+    } else if (isNewSelection.isTrue) {
+      await playNew();
       isNewSelection.value = false;
+      isCompleted.value = false;
     } else {
       await _audioPlayer.resume();
     }
   }
 
   Future<void> pause() async {
-    _audioPlayer.pause();
+    await _audioPlayer.pause();
   }
 
   Future<void> playNew() async {
@@ -80,6 +98,29 @@ class AudioController extends GetxController {
       final audioUrl = '$server$surahString.mp3';
       print('✅✅✅ audioUrl: $audioUrl');
       return audioUrl;
+    }
+  }
+
+  Future<void> seekForward() async {
+    final position = await _audioPlayer.getCurrentPosition();
+    final duration = await _audioPlayer.getDuration();
+
+    if (position != null && duration != null) {
+      final newPosition = position + const Duration(seconds: 10);
+      if (newPosition < duration) {
+        await _audioPlayer.seek(newPosition);
+      } else {
+        await _audioPlayer.seek(duration);
+      }
+    }
+  }
+
+  Future<void> seekBackward() async {
+    final position = await _audioPlayer.getCurrentPosition();
+    if (position != null) {
+      final newPosition = position - const Duration(seconds: 10);
+      await _audioPlayer
+          .seek(newPosition < Duration.zero ? Duration.zero : newPosition);
     }
   }
 }
