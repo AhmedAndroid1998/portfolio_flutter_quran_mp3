@@ -30,7 +30,10 @@ class AudioController extends GetxController {
     super.onInit();
     _audioPlayer = AudioPlayer();
 
-    _audioPlayer.onDurationChanged.listen((d) => totalDuration.value = d);
+    _audioPlayer.onDurationChanged.listen((d) {
+      print('✅✅✅✅ onDurationChanged: ${d.inSeconds}');
+      totalDuration.value = d;
+    });
     _audioPlayer.onPositionChanged.listen((p) => currentPosition.value = p);
     _audioPlayer.onPlayerComplete.listen((_) {
       print('✅✅✅✅✅✅✅✅✅ onPlayerComplete');
@@ -129,5 +132,9 @@ class AudioController extends GetxController {
       await _audioPlayer
           .seek(newPosition < Duration.zero ? Duration.zero : newPosition);
     }
+  }
+
+  Future<void> seekTo(Duration duration) async {
+    await _audioPlayer.seek(duration);
   }
 }

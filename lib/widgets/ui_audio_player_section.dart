@@ -11,10 +11,10 @@ class AudioPlayerSection extends StatefulWidget {
 }
 
 class _AudioPlayerSectionState extends State<AudioPlayerSection> {
-  double _currentValue = 0;
-  final double _maxValue = 60;
-
   final audioCtrl = Get.find<AudioController>();
+
+  late double trackTotalDuration;
+  late double trackCurrentPos;
 
   @override
   Widget build(BuildContext context) {
@@ -39,32 +39,59 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                     ),
                   ),
                 ),
-                Directionality(
-                  textDirection: TextDirection.ltr,
+                Obx(
+                  () {
+                    final trackCurrentPos =
+                        audioCtrl.currentPosition.value.inSeconds.toDouble();
+                    final trackTotalDuration =
+                        audioCtrl.totalDuration.value.inSeconds.toDouble();
 
-                  ///to change the direction of the Slider
-                  child: Slider(
-                      value: _currentValue,
-                      onChanged: (value) {
-                        setState(() {
-                          _currentValue = value;
-                        });
-                      }),
+                    return Directionality(
+                      ///to change the direction of the Slider
+                      textDirection: TextDirection.ltr,
+                      child: Slider(
+                          min: 0,
+                          max: trackTotalDuration,
+                          value: trackCurrentPos,
+                          onChanged: (value) {
+                            audioCtrl.seekTo(Duration(seconds: value.toInt()));
+                          }),
+                    );
+                  },
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.repeat),
+                    Padding(
+                      padding: EdgeInsets.only(right: 20),
+                      child: Obx(
+                        () {
+                          final trackCurrentPos = audioCtrl.currentPosition.value;
+                          final trackTotalDuration = audioCtrl.totalDuration.value;
+                          final time =
+                              '${_formatDuration(trackTotalDuration)} / ${_formatDuration(trackCurrentPos)}';
+                          print('💪💪💪💪💪 $time');
+                          return Text(
+                            '$time',
+                          );
+                        },
+                      ),
                     ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.download),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.share),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.repeat),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.download),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.share),
+                        ),
+                      ],
                     ),
                   ],
                 )
@@ -121,6 +148,14 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
         ),
       ],
     );
+  }
+
+  String _formatDuration(Duration d) {
+    final h = d.inHours.remainder(60);
+    final hours = h.toString().padLeft(2, '0');
+    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return h > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
   }
 
   ///adds a Material-like Shadow/drop effect for the custom _CircleButton below
