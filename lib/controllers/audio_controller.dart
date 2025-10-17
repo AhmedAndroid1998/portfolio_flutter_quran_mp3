@@ -69,22 +69,28 @@ class AudioController extends GetxController {
   Future<void> play() async {
     // if playback previously completed, restart from beginning
     if (isCompleted.isTrue) {
+      //I tried to seek it to Duration.zero and then resume playback
+      //as a more efficient solution than the quite bit intensive playNew() function, but it didn't work
       await playNew();
-      isCompleted.value = false;
     } else if (isNewSelection.isTrue) {
       await playNew();
       isNewSelection.value = false;
-      isCompleted.value = false;
     } else {
       await _audioPlayer.resume();
     }
+
+    isResumed.value = true;
+    playIcon.value = Icons.pause;
   }
 
   Future<void> pause() async {
     await _audioPlayer.pause();
+    isResumed.value = false;
+    playIcon.value = Icons.play_arrow;
   }
 
   Future<void> playNew() async {
+    isCompleted.value = false;
     final audioUrl = getRecitationLink();
     await _audioPlayer.play(UrlSource(audioUrl!));
   }
@@ -99,6 +105,7 @@ class AudioController extends GetxController {
       print('✅✅✅ audioUrl: $audioUrl');
       return audioUrl;
     }
+    return null;
   }
 
   Future<void> seekForward() async {

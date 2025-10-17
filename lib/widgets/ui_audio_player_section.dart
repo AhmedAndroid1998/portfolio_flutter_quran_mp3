@@ -90,7 +90,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                   radius: 28,
                   elevation: 10,
                   color: Colors.purpleAccent,
-                  onPressed: () {
+                  onPressed: () async {
                     if (audioCtrl.selectedSurah.isEmpty ||
                         audioCtrl.selectedReciter.isEmpty) {
                       Fluttertoast.showToast(
@@ -99,12 +99,12 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                         backgroundColor: Colors.redAccent,
                       );
                     } else {
-                      audioCtrl.isResumed.toggle();
-                      audioCtrl.playIcon.value =
-                          audioCtrl.isResumed.value ? Icons.pause : Icons.play_arrow;
-                      audioCtrl.isResumed.isTrue
-                          ? audioCtrl.play()
-                          : audioCtrl.pause();
+                      // if currently playing -> pause, else -> play (controller handles completed case)
+                      if (audioCtrl.isResumed.isTrue) {
+                        await audioCtrl.pause();
+                      } else {
+                        await audioCtrl.play();
+                      }
                     }
                   },
                 ),
