@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/reciters_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
+import 'package:quran_mp3/services/permission_service.dart';
 
 class AudioController extends GetxController {
   var selectedSurah = ''.obs;
@@ -136,5 +137,27 @@ class AudioController extends GetxController {
 
   Future<void> seekTo(Duration duration) async {
     await _audioPlayer.seek(duration);
+  }
+
+  Future<void> download() async {
+    if (selectedSurah.isEmpty || selectedReciter.isEmpty) {
+      // Fluttertoast.showToast(
+      //   msg: "رجاء، اختر الشيخ والسورة",
+      //   gravity: ToastGravity.BOTTOM,
+      //   backgroundColor: Colors.redAccent,
+      // );
+      Get.snackbar("تنبيه", "رجاءً اختر الشيخ والسورة أولاً",
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.white,
+          colorText: Colors.red,
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    //Check for storage permission
+    final hasPermission = await PermissionService.requestStoragePermission();
+    if (!hasPermission) return;
+
+    // ✅ Now safe to proceed with downloading
   }
 }

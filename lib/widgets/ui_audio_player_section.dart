@@ -84,7 +84,9 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                           icon: const Icon(Icons.repeat),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            audioCtrl.download();
+                          },
                           icon: const Icon(Icons.download),
                         ),
                         IconButton(
