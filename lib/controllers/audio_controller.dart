@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:quran_mp3/controllers/reciters_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
 import 'package:quran_mp3/services/permission_service.dart';
@@ -25,6 +29,8 @@ class AudioController extends GetxController {
   var currentPosition = Duration.zero.obs;
   var totalDuration = Duration.zero.obs;
   var isCompleted = false.obs;
+
+  final _dio = Dio();
 
   @override
   void onInit() {
@@ -159,5 +165,40 @@ class AudioController extends GetxController {
     if (!hasPermission) return;
 
     // ✅ Now safe to proceed with downloading
+    //Get app dir
+    final appDir = await getApplicationDocumentsDirectory();
+    //rather than downloading every file in a single dir, we'll create
+    // a folder for each reciter, so it's organized and easy to manage
+    final reciterFolder =
+        Directory('${appDir.path}/QuranMp3/${selectedReciter.value}');
+    if (!await reciterFolder.exists()) {
+      await reciterFolder.create(recursive: true);
+      print('✅✅✅✅✅✅✅✅ reciterFolder path: ${reciterFolder.path}');
+    }
+
+    //File path
+    final filePath = '${reciterFolder.path}/${selectedSurah.value}.mp3';
+    try {
+      _dio.download(
+        getRecitationLink()!,
+        filePath,
+        onReceiveProgress: (received, total) {
+          if (total > 0) {
+            //  print('Percentage: ${(received / total * 100).toStringAsFixed(0)}');
+          }
+        },
+      );
+      Get.snackbar("اكتمل التحميل", "تم حفظ السورة بنجاح",
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.white54,
+          colorText: Colors.green,
+          snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar("خطأ", "فشل التحميل",
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.white54,
+          colorText: Colors.red,
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 }
