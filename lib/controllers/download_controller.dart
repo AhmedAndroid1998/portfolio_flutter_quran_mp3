@@ -9,9 +9,14 @@ import '../services/permission_service.dart';
 
 class DownloadController extends GetxController {
   var isDownloading = false.obs;
-  var isDownloaded = false.obs;
   var progress = 0.0.obs;
   final _dio = Dio();
+
+  Future<bool> isFileDownloaded(String folder, String fileName) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final filePath = '${appDir.path}/QuranMp3/$folder/$fileName.mp3';
+    return File(filePath).exists();
+  }
 
   Future<bool> downloadFile(String url, String folder, String fileName) async {
     //First, Check for storage permission first
@@ -19,7 +24,6 @@ class DownloadController extends GetxController {
     if (!hasPermission) return false;
 
     // ✅ Now safe to proceed with downloading
-    isDownloaded.value = false;
     isDownloading.value = true;
     progress.value = 0.0;
 
@@ -40,7 +44,7 @@ class DownloadController extends GetxController {
         onReceiveProgress: (received, total) {
           if (total > 0) {
             progress.value = received / total;
-            print('Percentage: ${(received / total * 100).toStringAsFixed(0)}');
+            // print('Percentage: ${(received / total * 100).toStringAsFixed(0)}');
           }
         },
       );
@@ -51,7 +55,6 @@ class DownloadController extends GetxController {
           snackPosition: SnackPosition.BOTTOM);
 
       isDownloading.value = false;
-      isDownloaded.value = true;
 
       return true;
     } catch (e) {
@@ -67,12 +70,11 @@ class DownloadController extends GetxController {
     }
   }
 
-  Future<void> deleteFile(String fileName) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/$fileName.mp3');
+  Future<void> deleteFile(String folder, String fileName) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final file = File('${appDir.path}/QuranMp3/$folder/$fileName.mp3');
     if (await file.exists()) {
       await file.delete();
-      isDownloaded.value = false;
     }
   }
 }
