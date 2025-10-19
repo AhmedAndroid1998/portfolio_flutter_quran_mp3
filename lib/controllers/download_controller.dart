@@ -40,34 +40,27 @@ class DownloadController extends GetxController {
     //File path
     final filePath = '${reciterFolder.path}/$fileName.mp3';
 
-    final stopwatch = Stopwatch()..start();
     try {
-      _dio.download(
+      progress.value = 0.0;
+
+      await _dio.download(
         url,
         filePath,
         onReceiveProgress: (received, total) {
           if (total > 0) {
             progress.value = received / total;
-            // print('Percentage: ${(received / total * 100).toStringAsFixed(0)}');
           }
         },
       );
+
+      isDownloading.value = false;
+      isDownloaded.value = true;
+
       Fluttertoast.showToast(
           msg: "تم حفظ السورة بنجاح",
           backgroundColor: Colors.green,
           textColor: Colors.white,
           gravity: ToastGravity.BOTTOM_RIGHT);
-
-      stopwatch.stop();
-
-      // 🕐 Ensure visible duration (e.g., at least 2 seconds)
-      final elapsed = stopwatch.elapsedMilliseconds;
-      if (elapsed < 2000) {
-        await Future.delayed(Duration(milliseconds: 2000 - elapsed));
-      }
-
-      isDownloading.value = false;
-      isDownloaded.value = true;
     } catch (e) {
       Get.snackbar("خطأ", "فشل التحميل",
           duration: const Duration(seconds: 2),

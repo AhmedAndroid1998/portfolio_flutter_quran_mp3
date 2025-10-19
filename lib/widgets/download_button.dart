@@ -27,10 +27,12 @@ class DownloadButton extends StatelessWidget {
             width: 32,
             height: 32,
             child: Stack(
+              alignment: Alignment.center,
               children: [
                 CircularProgressIndicator(
                   value: downloadCtrl.progress.value,
                   strokeWidth: 3,
+                  color: Colors.red,
                 ),
                 Text(
                   (downloadCtrl.progress.value * 100).toStringAsFixed(0),
@@ -46,7 +48,10 @@ class DownloadButton extends StatelessWidget {
               await downloadCtrl.deleteFile(
                   audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value);
             },
-            icon: const Icon(Icons.delete),
+            icon: const Icon(
+              Icons.delete_forever,
+              color: Colors.blueGrey,
+            ),
           );
         }
 
