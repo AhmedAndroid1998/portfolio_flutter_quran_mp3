@@ -18,12 +18,11 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
   String? selectedReciter;
   List<String> filteredReciterList = [];
   final audioCtrl = Get.find<AudioController>();
-  final recitersCtrl = Get.find<RecitersController>();
 
   @override
   void initState() {
     super.initState();
-    recitationsFutureList = recitersCtrl.extractReciters();
+    recitationsFutureList = RecitersService.extractRecitations();
   }
 
   ///since the filtering logic for both reciters and surahs is the same,
@@ -81,7 +80,7 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
                       selectedItem: audioCtrl.selectedReciter.value,
                       onTap: (i) {
                         audioCtrl.setReciter(filteredReciterList[i]);
-                        print(recitersCtrl.recitations[filteredReciterList[i]]);
+                        print(RecitersService.recitations[filteredReciterList[i]]);
                       }),
                 );
               }

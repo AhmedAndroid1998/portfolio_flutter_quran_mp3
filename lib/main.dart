@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
+import 'package:quran_mp3/controllers/download_controller.dart';
 
 import 'screens/home_page.dart';
 
 void main() {
   // Register the controllers globally once
   Get.put(AudioController());
+  Get.put(DownloadController());
 
   runApp(GetMaterialApp(
     home: QuranAudioLibraryApp(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
+import 'package:quran_mp3/widgets/download_button.dart';
 
 class AudioPlayerSection extends StatefulWidget {
   const AudioPlayerSection({super.key});
@@ -83,12 +84,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                           onPressed: () {},
                           icon: const Icon(Icons.repeat),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            audioCtrl.download();
-                          },
-                          icon: const Icon(Icons.download),
-                        ),
+                        DownloadButton(),
                         IconButton(
                           onPressed: () {},
                           icon: const Icon(Icons.share),
