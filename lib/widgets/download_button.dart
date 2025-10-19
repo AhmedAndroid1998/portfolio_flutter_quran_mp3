@@ -12,6 +12,13 @@ class DownloadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Whenever user changes surah/reciter, check file state so you can load the appropriate button
+    everAll(
+      [audioCtrl.selectedSurah, audioCtrl.selectedReciter],
+      (_) => downloadCtrl.checkIfDownloaded(
+          audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value),
+    );
+
     return Obx(
       () {
         if (downloadCtrl.isDownloading.value) {
@@ -32,42 +39,33 @@ class DownloadButton extends StatelessWidget {
               ],
             ),
           );
-        } else {
-          return FutureBuilder<bool>(
-            future: downloadCtrl.isFileDownloaded(
-                audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value),
-            builder: (context, snapshot) {
-              final isDownloaded = snapshot.data ?? false;
-              if (isDownloaded) {
-                return IconButton(
-                    onPressed: () async {
-                      await downloadCtrl.deleteFile(audioCtrl.selectedReciter.value,
-                          audioCtrl.selectedSurah.value);
-                    },
-                    icon: const Icon(Icons.delete));
-              } else {
-                return IconButton(
-                  onPressed: () async {
-                    if (audioCtrl.selectedSurah.isEmpty ||
-                        audioCtrl.selectedReciter.isEmpty) {
-                      Get.snackbar("تنبيه", "رجاءً اختر الشيخ والسورة أولاً",
-                          duration: const Duration(seconds: 2),
-                          backgroundColor: Colors.white,
-                          colorText: Colors.red,
-                          snackPosition: SnackPosition.BOTTOM);
-                      return;
-                    }
-                    await downloadCtrl.downloadFile(
-                        audioCtrl.getAudioLink()!,
-                        audioCtrl.selectedReciter.value,
-                        audioCtrl.selectedSurah.value);
-                  },
-                  icon: const Icon(Icons.download),
-                );
-              }
+        }
+        if (downloadCtrl.isDownloaded.value) {
+          return IconButton(
+            onPressed: () async {
+              await downloadCtrl.deleteFile(
+                  audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value);
             },
+            icon: const Icon(Icons.delete),
           );
         }
+
+        return IconButton(
+          onPressed: () async {
+            if (audioCtrl.selectedSurah.isEmpty ||
+                audioCtrl.selectedReciter.isEmpty) {
+              Get.snackbar("تنبيه", "رجاءً اختر الشيخ والسورة أولاً",
+                  duration: const Duration(seconds: 2),
+                  backgroundColor: Colors.white,
+                  colorText: Colors.red,
+                  snackPosition: SnackPosition.BOTTOM);
+              return;
+            }
+            await downloadCtrl.downloadFile(audioCtrl.getAudioLink()!,
+                audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value);
+          },
+          icon: const Icon(Icons.download),
+        );
       },
     );
   }
