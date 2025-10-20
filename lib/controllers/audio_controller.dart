@@ -56,7 +56,7 @@ class AudioController extends GetxController {
     print('selectedSurah.value: ${selectedSurah.value}');
     print('selectedReciter.value: ${selectedReciter.value}');
     if (selectedReciter.isNotEmpty) {
-      //choiceText.value = 'سورة ${selectedSurah.value} - ${selectedReciter.value}';
+      choiceText.value = 'سورة ${selectedSurah.value} - ${selectedReciter.value}';
 
       isNewSelection.value = true;
       if (isResumed.isTrue) playNew();
@@ -68,14 +68,14 @@ class AudioController extends GetxController {
     print('selectedReciter.value: ${selectedReciter.value}');
     print('selectedSurah.value: ${selectedSurah.value}');
     if (selectedSurah.isNotEmpty) {
-      //choiceText.value = 'سورة ${selectedSurah.value} - ${selectedReciter.value}';
+      choiceText.value = 'سورة ${selectedSurah.value} - ${selectedReciter.value}';
 
       isNewSelection.value = true;
       if (isResumed.isTrue) playNew();
     }
   }
 
-  Future<void> togglePlay() async {
+  Future<void> togglePlayback() async {
     //Check that the user had made a choice (selected a reciter & a surah)
     if (selectedSurah.isEmpty || selectedReciter.isEmpty) {
       Fluttertoast.showToast(

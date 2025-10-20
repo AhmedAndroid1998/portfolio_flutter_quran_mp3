@@ -106,7 +106,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                   elevation: 10,
                   color: Colors.purpleAccent,
                   onPressed: () async {
-                    audioCtrl.togglePlay();
+                    audioCtrl.togglePlayback();
                   },
                 ),
               ),
