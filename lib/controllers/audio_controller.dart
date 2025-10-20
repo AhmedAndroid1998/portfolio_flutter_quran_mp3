@@ -2,8 +2,11 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:quran_mp3/controllers/reciters_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
+
+import 'download_controller.dart';
 
 class AudioController extends GetxController {
   var selectedSurah = ''.obs;
@@ -27,6 +30,8 @@ class AudioController extends GetxController {
   var isCompleted = false.obs;
 
   var hasFinishedLoading = false.obs;
+
+  final downloadCtrl = Get.find<DownloadController>();
 
   @override
   void onInit() {
@@ -121,13 +126,30 @@ class AudioController extends GetxController {
     playIcon.value = Icons.pause;
     isCompleted.value = false;
 
-    //before streaming finished loading, show a transient loading text "loading" and ../.. in duration
-    hasFinishedLoading.value = false;
-    choiceText.value = 'جاري التحميل البيانات ...';
-    timing.value = '.. / ..';
+    await _audioPlayer
+        .stop(); //necessary to avoid errors, e.g. switching between different audio source
+    //Release the previous audio stream &️ Reset playback position to 0.
 
-    final audioUrl = getAudioLink();
-    await _audioPlayer.play(UrlSource(audioUrl!));
+    //Play from the local storage, otherwise, stream online
+    final isAlreadyDownloaded = downloadCtrl.isDownloaded.value;
+    String audioSource;
+    if (isAlreadyDownloaded) {
+      //offline playback
+      print('✅🕌🕌🕌 offline playback');
+      final appDir = await getApplicationDocumentsDirectory();
+      audioSource =
+          '${appDir.path}/QuranMp3/${selectedReciter.value}/${selectedSurah.value}.mp3';
+      await _audioPlayer.play(DeviceFileSource(audioSource));
+    } else {
+      //online  streaming
+      print('✅🕌🕌 online streaming');
+      //before streaming finished loading, show a transient loading text "loading" and ../.. in duration
+      hasFinishedLoading.value = false;
+      choiceText.value = 'جاري التحميل البيانات ...';
+      timing.value = '.. / ..';
+      audioSource = getAudioLink()!;
+      await _audioPlayer.play(UrlSource(audioSource));
+    }
   }
 
   String? getAudioLink() {
@@ -185,4 +207,6 @@ class AudioController extends GetxController {
     final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
     return h > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
   }
+
+  void offlinePlay() {}
 }

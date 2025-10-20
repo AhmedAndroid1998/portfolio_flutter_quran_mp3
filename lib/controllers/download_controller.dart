@@ -15,6 +15,7 @@ class DownloadController extends GetxController {
   final _dio = Dio();
 
   Future<void> checkIfDownloaded(String folder, String fileName) async {
+    print('✅✅✅✅✅✅✅ checkIfDownloaded');
     final appDir = await getApplicationDocumentsDirectory();
     final filePath = '${appDir.path}/QuranMp3/$folder/$fileName.mp3';
     isDownloaded.value = await File(filePath).exists();

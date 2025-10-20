@@ -8,8 +8,9 @@ import 'screens/home_page.dart';
 
 void main() {
   // Register the controllers globally once
+  Get.put(
+      DownloadController()); //register first because AudioController depends  on it
   Get.put(AudioController());
-  Get.put(DownloadController());
 
   runApp(GetMaterialApp(
     home: QuranAudioLibraryApp(),

@@ -15,8 +15,15 @@ class DownloadButton extends StatelessWidget {
     //Whenever user changes surah/reciter, check file state so you can load the appropriate button
     everAll(
       [audioCtrl.selectedSurah, audioCtrl.selectedReciter],
-      (_) => downloadCtrl.checkIfDownloaded(
-          audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value),
+      (_) {
+        final reciter = audioCtrl.selectedReciter.value;
+        final surah = audioCtrl.selectedSurah.value;
+
+        // Run only if both are selected
+        if (reciter.isNotEmpty && surah.isNotEmpty) {
+          downloadCtrl.checkIfDownloaded(reciter, surah);
+        }
+      },
     );
 
     return Obx(
