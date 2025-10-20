@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
 import 'package:quran_mp3/widgets/download_button.dart';
@@ -34,7 +33,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                   padding: const EdgeInsets.only(top: 30.0),
                   child: Obx(
                     () => Text(
-                      audioCtrl.descriptionText.value,
+                      audioCtrl.choiceText.value,
                       style:
                           const TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
                     ),
@@ -66,16 +65,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                     Padding(
                       padding: EdgeInsets.only(right: 20),
                       child: Obx(
-                        () {
-                          final trackCurrentPos = audioCtrl.currentPosition.value;
-                          final trackTotalDuration = audioCtrl.totalDuration.value;
-                          final time =
-                              '${_formatDuration(trackTotalDuration)} / ${_formatDuration(trackCurrentPos)}';
-                          print('💪💪💪💪💪 $time');
-                          return Text(
-                            '$time',
-                          );
-                        },
+                        () => Text(audioCtrl.timing.value),
                       ),
                     ),
                     Row(
@@ -116,21 +106,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                   elevation: 10,
                   color: Colors.purpleAccent,
                   onPressed: () async {
-                    if (audioCtrl.selectedSurah.isEmpty ||
-                        audioCtrl.selectedReciter.isEmpty) {
-                      Fluttertoast.showToast(
-                        msg: "رجاء، اختر الشيخ والسورة",
-                        gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.redAccent,
-                      );
-                    } else {
-                      // if currently playing -> pause, else -> play (controller handles completed case)
-                      if (audioCtrl.isResumed.isTrue) {
-                        await audioCtrl.pause();
-                      } else {
-                        await audioCtrl.play();
-                      }
-                    }
+                    audioCtrl.togglePlay();
                   },
                 ),
               ),
@@ -146,14 +122,6 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
         ),
       ],
     );
-  }
-
-  String _formatDuration(Duration d) {
-    final h = d.inHours.remainder(60);
-    final hours = h.toString().padLeft(2, '0');
-    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return h > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
   }
 
   ///adds a Material-like Shadow/drop effect for the custom _CircleButton below

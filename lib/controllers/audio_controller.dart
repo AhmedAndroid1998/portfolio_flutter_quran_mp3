@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/reciters_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
@@ -15,13 +16,17 @@ class AudioController extends GetxController {
 
   var playIcon = Icons.play_arrow.obs;
 
-  var descriptionText = 'اختر اسم الشيخ والسورة'.obs;
+  var choiceText = 'اختر اسم الشيخ والسورة'.obs;
 
   late final AudioPlayer _audioPlayer;
 
   var currentPosition = Duration.zero.obs;
   var totalDuration = Duration.zero.obs;
+  var timing = '00:00 / 00:00'.obs;
+
   var isCompleted = false.obs;
+
+  var hasFinishedLoading = false.obs;
 
   @override
   void onInit() {
@@ -29,10 +34,15 @@ class AudioController extends GetxController {
     _audioPlayer = AudioPlayer();
 
     _audioPlayer.onDurationChanged.listen((d) {
+      hasFinishedLoading.value = true;
+      choiceText.value = 'سورة ${selectedSurah.value} - ${selectedReciter.value}';
       print('✅✅✅✅ onDurationChanged: ${d.inSeconds}');
       totalDuration.value = d;
     });
-    _audioPlayer.onPositionChanged.listen((p) => currentPosition.value = p);
+    _audioPlayer.onPositionChanged.listen((p) {
+      currentPosition.value = p;
+      updateTiming();
+    });
     _audioPlayer.onPlayerComplete.listen((_) {
       print('✅✅✅✅✅✅✅✅✅ onPlayerComplete');
       isCompleted.value = true;
@@ -46,8 +56,7 @@ class AudioController extends GetxController {
     print('selectedSurah.value: ${selectedSurah.value}');
     print('selectedReciter.value: ${selectedReciter.value}');
     if (selectedReciter.isNotEmpty) {
-      descriptionText.value =
-          'سورة ${selectedSurah.value} - ${selectedReciter.value}';
+      //choiceText.value = 'سورة ${selectedSurah.value} - ${selectedReciter.value}';
 
       isNewSelection.value = true;
       if (isResumed.isTrue) playNew();
@@ -59,29 +68,40 @@ class AudioController extends GetxController {
     print('selectedReciter.value: ${selectedReciter.value}');
     print('selectedSurah.value: ${selectedSurah.value}');
     if (selectedSurah.isNotEmpty) {
-      descriptionText.value =
-          'سورة ${selectedSurah.value} - ${selectedReciter.value}';
+      //choiceText.value = 'سورة ${selectedSurah.value} - ${selectedReciter.value}';
 
       isNewSelection.value = true;
       if (isResumed.isTrue) playNew();
     }
   }
 
-  Future<void> play() async {
-    // if playback previously completed, restart from beginning
-    if (isCompleted.isTrue) {
+  Future<void> togglePlay() async {
+    //Check that the user had made a choice (selected a reciter & a surah)
+    if (selectedSurah.isEmpty || selectedReciter.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "رجاء، اختر الشيخ والسورة",
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.redAccent,
+      );
+      return;
+    }
+
+    // if already playing -> pause
+    if (isResumed.isTrue) {
+      await pause();
+      // if playback previously completed, restart from beginning
+    } else if (isCompleted.isTrue) {
       //I tried to seek it to Duration.zero and then resume playback
-      //as a more efficient solution than the quite bit intensive playNew() function, but it didn't work
+      //as a more efficient solution than the quite bit intensive playNew() function, but
+      //in audio_players, Calling seek while in “completed” state does not automatically reset playback.
+      //resume() resumes only if the state is paused, not completed.
       await playNew();
     } else if (isNewSelection.isTrue) {
       await playNew();
       isNewSelection.value = false;
     } else {
-      await _audioPlayer.resume();
+      await resume();
     }
-
-    isResumed.value = true;
-    playIcon.value = Icons.pause;
   }
 
   Future<void> pause() async {
@@ -90,8 +110,22 @@ class AudioController extends GetxController {
     playIcon.value = Icons.play_arrow;
   }
 
+  Future<void> resume() async {
+    await _audioPlayer.resume();
+    isResumed.value = true;
+    playIcon.value = Icons.pause;
+  }
+
   Future<void> playNew() async {
+    isResumed.value = true;
+    playIcon.value = Icons.pause;
     isCompleted.value = false;
+
+    //before streaming finished loading, show a transient loading text "loading" and ../.. in duration
+    hasFinishedLoading.value = false;
+    choiceText.value = 'جاري التحميل البيانات ...';
+    timing.value = '.. / ..';
+
     final audioUrl = getAudioLink();
     await _audioPlayer.play(UrlSource(audioUrl!));
   }
@@ -136,5 +170,19 @@ class AudioController extends GetxController {
     await _audioPlayer.seek(duration);
   }
 
-  Future<void> download() async {}
+  void updateTiming() {
+    final trackCurrentPosFormatted = _formatDuration(currentPosition.value);
+    final trackTotalDurationFormatted = _formatDuration(totalDuration.value);
+
+    //if (audioCtrl.isResumed.isFalse)
+    timing.value = '$trackTotalDurationFormatted / $trackCurrentPosFormatted';
+  }
+
+  String _formatDuration(Duration d) {
+    final h = d.inHours.remainder(60);
+    final hours = h.toString().padLeft(2, '0');
+    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return h > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
+  }
 }
