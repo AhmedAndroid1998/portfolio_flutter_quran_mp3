@@ -48,18 +48,22 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             Expanded(
-              child: IndexedStack(
-                index: _selectedSection,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: ReciterListWidget()),
-                      SizedBox(width: 5),
-                      Expanded(child: SurahListWidget()),
-                    ],
-                  ),
-                  DownloadsSectionWidget()
-                ],
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: IndexedStack(
+                  key: ValueKey(_selectedSection), //ensures correct animation
+                  index: _selectedSection,
+                  children: const [
+                    Row(
+                      children: [
+                        Expanded(child: ReciterListWidget()),
+                        SizedBox(width: 5),
+                        Expanded(child: SurahListWidget()),
+                      ],
+                    ),
+                    DownloadsSectionWidget()
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 30),
