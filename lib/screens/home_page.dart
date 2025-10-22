@@ -49,7 +49,7 @@ class MyHomePage extends StatelessWidget {
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                       offset: isDownloads
-                          ? const Offset(-1.0, 1.0) // slide out to left
+                          ? const Offset(-1.1, 0.0) // slide out to left
                           : Offset.zero, // visible
                       child: const Row(
                         children: [
@@ -65,7 +65,7 @@ class MyHomePage extends StatelessWidget {
                       curve: Curves.easeInOut,
                       offset: isDownloads
                           ? Offset.zero // visible
-                          : const Offset(1.0, 0.0), // slide out to right
+                          : const Offset(1.1, 0.0), // slide out to right
                       child: const DownloadsSectionWidget(),
                     ),
                   ],
