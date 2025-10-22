@@ -33,6 +33,8 @@ class AudioController extends GetxController {
 
   final downloadCtrl = Get.find<DownloadController>();
 
+  var repeatPlaying = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -53,6 +55,10 @@ class AudioController extends GetxController {
       isCompleted.value = true;
       isResumed.value = false;
       playIcon.value = Icons.play_arrow;
+
+      if (repeatPlaying.isTrue) {
+        playNew();
+      }
     });
   }
 
@@ -208,5 +214,7 @@ class AudioController extends GetxController {
     return h > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
   }
 
-  void offlinePlay() {}
+  void toggleRepeat() {
+    repeatPlaying.value = !repeatPlaying.value;
+  }
 }
