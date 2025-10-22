@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:quran_mp3/controllers/reciters_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
+import 'package:quran_mp3/services/reciters_service.dart';
 
 import 'download_controller.dart';
 

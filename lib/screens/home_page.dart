@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:quran_mp3/controllers/presented_section_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
 import 'package:quran_mp3/widgets/downloads-section.dart';
 import 'package:quran_mp3/widgets/reciter_list_widget.dart';
 import 'package:quran_mp3/widgets/surah_list_widget.dart';
 import 'package:quran_mp3/widgets/ui_audio_player_section.dart';
 
-class MyHomePage extends StatefulWidget {
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+class MyHomePage extends StatelessWidget {
+  final presentedSectionCtrl = Get.put(PresentedSectionController());
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedSection = 0;
+  late final _reciterAndSurahSection = const Row(
+    children: [
+      Expanded(child: ReciterListWidget()),
+      Expanded(child: SurahListWidget()),
+    ],
+  );
 
-  IconData _selectedSectionIcon = Icons.cloud_download; // 0=List, 1=Downloads;
+  late final _downloadsSection = const DownloadsSectionWidget();
+
+  final _pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(.8),
       appBar: AppBar(
@@ -31,15 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: Icon(_selectedSectionIcon),
-            onPressed: () {
-              setState(() {
-                _selectedSection = _selectedSection == 0 ? 1 : 0;
-                _selectedSectionIcon =
-                    _selectedSection == 0 ? Icons.cloud_download : Icons.headphones;
-              });
-            },
+          Obx(
+            () => IconButton(
+              icon: Icon(presentedSectionCtrl.selectSectionIcon.value),
+              onPressed: () {
+                presentedSectionCtrl.toggleSection();
+              },
+            ),
           )
         ],
       ),
@@ -48,20 +50,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: IndexedStack(
-                  key: ValueKey(_selectedSection), //ensures correct animation
-                  index: _selectedSection,
+              child: Obx(
+                () => IndexedStack(
+                  index: presentedSectionCtrl.selectedSection.value,
                   children: const [
                     Row(
                       children: [
                         Expanded(child: ReciterListWidget()),
-                        SizedBox(width: 5),
                         Expanded(child: SurahListWidget()),
                       ],
                     ),
-                    DownloadsSectionWidget()
+                    DownloadsSectionWidget(),
                   ],
                 ),
               ),

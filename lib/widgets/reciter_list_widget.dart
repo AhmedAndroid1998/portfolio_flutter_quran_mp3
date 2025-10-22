@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
-import 'package:quran_mp3/controllers/reciters_controller.dart';
 import 'package:quran_mp3/screens/home_page.dart';
+import 'package:quran_mp3/services/reciters_service.dart';
 
 class ReciterListWidget extends StatefulWidget {
   const ReciterListWidget({super.key});
