@@ -46,15 +46,15 @@ class MyHomePage extends StatelessWidget {
                   children: [
                     // Reciters + Surahs Section
                     AnimatedSlide(
-                      duration: const Duration(milliseconds: 400),
+                      duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                       offset: isDownloads
-                          ? const Offset(-1.0, 0.0) // slide out to left
+                          ? const Offset(-1.0, 1.0) // slide out to left
                           : Offset.zero, // visible
                       child: const Row(
                         children: [
-                          Expanded(child: ReciterListWidget()),
                           Expanded(child: SurahListWidget()),
+                          Expanded(child: ReciterListWidget()),
                         ],
                       ),
                     ),

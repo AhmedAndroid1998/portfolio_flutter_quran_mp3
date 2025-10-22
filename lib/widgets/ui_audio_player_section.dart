@@ -48,30 +48,25 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                     final trackTotalDuration =
                         audioCtrl.totalDuration.value.inSeconds.toDouble();
 
-                    return Directionality(
-                      ///to change the direction of the Slider
-                      textDirection: TextDirection.ltr,
-                      child: Slider(
-                          min: 0,
-                          max: trackTotalDuration,
-                          value: trackCurrentPos,
-                          onChanged: (value) {
-                            audioCtrl.seekTo(Duration(seconds: value.toInt()));
-                          }),
-                    );
+                    return Slider(
+                        min: 0,
+                        max: trackTotalDuration,
+                        value: trackCurrentPos,
+                        onChanged: (value) {
+                          audioCtrl.seekTo(Duration(seconds: value.toInt()));
+                        });
                   },
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 20),
-                      child: Obx(
-                        () => Text(audioCtrl.timing.value),
-                      ),
-                    ),
                     Row(
                       children: [
+                        DownloadButton(),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.share),
+                        ),
                         Obx(
                           () => IconButton(
                             onPressed: () => audioCtrl.toggleRepeat(),
@@ -80,12 +75,13 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                                 : const Icon(Icons.repeat),
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.share),
-                        ),
-                        DownloadButton(),
                       ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 20),
+                      child: Obx(
+                        () => Text(audioCtrl.timing.value),
+                      ),
                     ),
                   ],
                 )
