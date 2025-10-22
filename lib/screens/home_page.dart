@@ -10,17 +10,6 @@ import 'package:quran_mp3/widgets/ui_audio_player_section.dart';
 class MyHomePage extends StatelessWidget {
   final presentedSectionCtrl = Get.put(PresentedSectionController());
 
-  late final _reciterAndSurahSection = const Row(
-    children: [
-      Expanded(child: ReciterListWidget()),
-      Expanded(child: SurahListWidget()),
-    ],
-  );
-
-  late final _downloadsSection = const DownloadsSectionWidget();
-
-  final _pageController = PageController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,20 +39,38 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Obx(
-                () => IndexedStack(
-                  index: presentedSectionCtrl.selectedSection.value,
-                  children: const [
-                    Row(
-                      children: [
-                        Expanded(child: ReciterListWidget()),
-                        Expanded(child: SurahListWidget()),
-                      ],
+              child: Obx(() {
+                final isDownloads = presentedSectionCtrl.selectedSection.value == 1;
+
+                return Stack(
+                  children: [
+                    // Reciters + Surahs Section
+                    AnimatedSlide(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOut,
+                      offset: isDownloads
+                          ? const Offset(-1.0, 0.0) // slide out to left
+                          : Offset.zero, // visible
+                      child: const Row(
+                        children: [
+                          Expanded(child: ReciterListWidget()),
+                          Expanded(child: SurahListWidget()),
+                        ],
+                      ),
                     ),
-                    DownloadsSectionWidget(),
+
+                    // Downloads Section
+                    AnimatedSlide(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOut,
+                      offset: isDownloads
+                          ? Offset.zero // visible
+                          : const Offset(1.0, 0.0), // slide out to right
+                      child: const DownloadsSectionWidget(),
+                    ),
                   ],
-                ),
-              ),
+                );
+              }),
             ),
             SizedBox(height: 30),
             AudioPlayerSection(),
