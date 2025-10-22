@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
+import 'package:quran_mp3/widgets/downloads-section.dart';
 import 'package:quran_mp3/widgets/reciter_list_widget.dart';
 import 'package:quran_mp3/widgets/surah_list_widget.dart';
 import 'package:quran_mp3/widgets/ui_audio_player_section.dart';
@@ -10,6 +11,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _selectedSection = 0;
+
+  IconData _selectedSectionIcon = Icons.cloud_download; // 0=List, 1=Downloads;
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -25,17 +30,35 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(_selectedSectionIcon),
+            onPressed: () {
+              setState(() {
+                _selectedSection = _selectedSection == 0 ? 1 : 0;
+                _selectedSectionIcon =
+                    _selectedSection == 0 ? Icons.cloud_download : Icons.headphones;
+              });
+            },
+          )
+        ],
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(10.0),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
             Expanded(
-              child: Row(
+              child: IndexedStack(
+                index: _selectedSection,
                 children: [
-                  Expanded(child: ReciterListWidget()),
-                  SizedBox(width: 5),
-                  Expanded(child: SurahListWidget()),
+                  Row(
+                    children: [
+                      Expanded(child: ReciterListWidget()),
+                      SizedBox(width: 5),
+                      Expanded(child: SurahListWidget()),
+                    ],
+                  ),
+                  DownloadsSectionWidget()
                 ],
               ),
             ),

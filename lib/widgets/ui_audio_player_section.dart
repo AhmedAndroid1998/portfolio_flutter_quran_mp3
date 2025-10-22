@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
-import 'package:quran_mp3/widgets/custom_repeat_off_icon.dart';
 import 'package:quran_mp3/widgets/download_button.dart';
+
+import '../core/custom_repeat_off_icon.dart';
 
 class AudioPlayerSection extends StatefulWidget {
   const AudioPlayerSection({super.key});
