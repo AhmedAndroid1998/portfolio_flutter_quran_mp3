@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quran_mp3/controllers/downloads_list_controler.dart';
 
 import '../controllers/audio_controller.dart';
 import '../controllers/download_controller.dart';
@@ -9,6 +10,7 @@ class DownloadButton extends StatelessWidget {
 
   final audioCtrl = Get.find<AudioController>();
   final downloadCtrl = Get.find<DownloadController>();
+  final downloadsListCtrl = Get.find<DownloadsListController>();
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,7 @@ class DownloadButton extends StatelessWidget {
             onPressed: () async {
               await downloadCtrl.deleteFile(
                   audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value);
+              await downloadsListCtrl.loadDownloads();
             },
             icon: const Icon(
               Icons.delete_forever,
@@ -75,6 +78,7 @@ class DownloadButton extends StatelessWidget {
             }
             await downloadCtrl.downloadFile(audioCtrl.getAudioLink()!,
                 audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value);
+            await downloadsListCtrl.loadDownloads();
           },
           icon: const Icon(Icons.download),
         );

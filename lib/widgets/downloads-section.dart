@@ -9,33 +9,35 @@ class DownloadsSectionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Column(
-        children: [
-          Directionality(
-            textDirection: TextDirection.rtl,
-            child: Container(
-              color: Colors.blueAccent,
-              child: const TabBar(
-                indicatorColor: Colors.lightBlueAccent,
-                indicatorWeight: 3,
-                tabs: [
-                  Tab(
-                    text: 'الملفات المحملة',
-                  ),
-                  Tab(
-                    text: 'جاري التحميل...',
-                  ),
-                ],
+      child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Column(
+            children: [
+              Container(
+                color: Colors.blueAccent,
+                child: const TabBar(
+                  indicatorColor: Colors.lightBlueAccent,
+                  indicatorWeight: 3,
+                  tabs: [
+                    Tab(
+                      text: 'الملفات المحملة',
+                    ),
+                    Tab(
+                      text: 'جاري التحميل...',
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              children: [DownloadedFilesTab(), DownloadingFilesTab()],
-            ),
-          )
-        ],
-      ),
+              Expanded(
+                child: Container(
+                  color: Colors.white,
+                  child: TabBarView(
+                    children: [DownloadedFilesTab(), DownloadingFilesTab()],
+                  ),
+                ),
+              )
+            ],
+          )),
     );
   }
 }
