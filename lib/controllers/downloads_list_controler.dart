@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DownloadsListController extends GetxController {
   var downloads = <String, List<File>>{}.obs; //{reciterFolder: [list of surah files]
+  var selectedReciterItem = (-1).obs;
 
   @override
   void onInit() {
