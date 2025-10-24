@@ -2,19 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-class ReciterDownloadedSurahs extends StatelessWidget {
-  final String reciterName;
-  final List<File> files;
+class ReciterDownloadedSurahsList extends StatelessWidget {
+  final MapEntry<String, List<File>> currentReciter;
   final VoidCallback onBack;
 
-  const ReciterDownloadedSurahs(
-      {super.key,
-      required this.reciterName,
-      required this.files,
-      required this.onBack});
+  const ReciterDownloadedSurahsList(
+      {super.key, required this.currentReciter, required this.onBack});
 
   @override
   Widget build(BuildContext context) {
+    final reciterName = currentReciter.key;
+    final files = currentReciter.value;
+
     if (files.isEmpty) {
       return const Center(
         child: Text(
