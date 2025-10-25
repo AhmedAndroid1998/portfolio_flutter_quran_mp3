@@ -141,7 +141,26 @@ class DownloadedFilesTab extends StatelessWidget {
                             fontSize: 21,
                           ),
                     ),
-                    Text('size:' + '${13.5}'),
+                    FutureBuilder<int>(
+                      future: file.length(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Text('Size: ...');
+                        } else if (snapshot.hasError) {
+                          return const Text('size: error');
+                        } else {
+                          final bytes = snapshot.data ?? 0;
+                          final sizeInKB = bytes / 1024;
+                          final sizeInMB = bytes / (1024 * 1024);
+
+                          final displaySize = sizeInMB >= 1
+                              ? '${sizeInMB.toStringAsFixed(2)} MB'
+                              : '${sizeInKB.toStringAsFixed(2)} KB';
+
+                          return Text('size: $displaySize');
+                        }
+                      },
+                    ),
                   ],
                 ),
                 trailing: IconButton(
