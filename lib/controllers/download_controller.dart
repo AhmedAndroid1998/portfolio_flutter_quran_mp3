@@ -17,6 +17,8 @@ class DownloadItem {
   final RxDouble progress;
   var downloadingProgress = ''.obs;
   final RxBool isDownloaded;
+  final CancelToken cancelToken =
+      CancelToken(); //provided by dio and allows you to cancel a download process
 
   DownloadItem({
     required this.surah,
@@ -48,7 +50,7 @@ class DownloadController extends GetxController {
   /// Add a download entry for UI tracking
   void addDownloadEntry(String reciter, String surah) {
     final item = DownloadItem(reciter: reciter, surah: surah);
-    downloads.add(item);
+    downloads.insert(0, item);
   }
 
   Future<void> downloadFile(String url, String folder, String fileName) async {
@@ -62,7 +64,7 @@ class DownloadController extends GetxController {
 
     // Add to observable list for "DownloadingFilesTab"
     addDownloadEntry(folder, fileName);
-    final currentItem = downloads.last;
+    final currentItem = downloads.first;
 
     //Get app dir
     final appDir = await getApplicationDocumentsDirectory();
@@ -81,6 +83,7 @@ class DownloadController extends GetxController {
       await _dio.download(
         url,
         filePath,
+        cancelToken: currentItem.cancelToken,
         onReceiveProgress: (received, total) {
           if (total > 0) {
             final value = received / total;
@@ -110,11 +113,15 @@ class DownloadController extends GetxController {
           textColor: Colors.white,
           gravity: ToastGravity.BOTTOM_RIGHT);
     } catch (e) {
-      Get.snackbar("خطأ", "فشل التحميل",
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.white54,
-          colorText: Colors.red,
-          snackPosition: SnackPosition.BOTTOM);
+      if (e is DioException && CancelToken.isCancel(e)) {
+        print("🚫 Download cancelled by user");
+      } else {
+        Get.snackbar("خطأ", "فشل التحميل",
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.white54,
+            colorText: Colors.red,
+            snackPosition: SnackPosition.BOTTOM);
+      }
       isDownloading.value = false;
       print("❌ Download failed: $e");
       downloads.remove(currentItem);

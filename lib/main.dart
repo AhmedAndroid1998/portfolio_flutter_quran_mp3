@@ -4,12 +4,10 @@ import 'package:quran_mp3/controllers/audio_controller.dart';
 import 'package:quran_mp3/controllers/download_controller.dart';
 import 'package:quran_mp3/controllers/downloads_list_controler.dart';
 
-import 'controllers/downloading_list_controller.dart';
 import 'screens/home_page.dart';
 
 void main() {
   // Register the controllers globally once
-  Get.put(DownloadingListController());
   Get.put(
       DownloadController()); //register first because AudioController depends  on it
   Get.put(DownloadsListController());

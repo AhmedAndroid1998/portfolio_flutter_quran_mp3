@@ -74,6 +74,12 @@ class DownloadingFilesTab extends StatelessWidget {
                       onPressed: () async {
                         if (item.isDownloaded.isFalse) {
                           ///here, I want to cancel the download  process
+                          try {
+                            item.cancelToken.cancel('User cancelled download');
+                            downloadCtrl.downloads.remove(item); //o
+                          } catch (e) {
+                            print('❌ Cancel failed: $e');
+                          }
                         }
                       },
                       icon: Icon(
