@@ -97,91 +97,79 @@ class DownloadedFilesTab extends StatelessWidget {
       controller.selectedReciterItem.value = -1; //returns to the reciters list
     }
 
-    return WillPopScope(
-      ///Allow us to override the back button behavior
-      onWillPop: () async {
-        if (!controller.selectedReciterItem.isNegative) {
-          // If a reciter is currently opened, go back to the reciters list instead of popping the route
-          controller.selectedReciterItem.value = -1;
-          return false; // prevent route pop
-        }
-        return true; // allow normal navigation (exit screen)
-      },
-      child: Column(
-        children: [
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  controller.selectedReciterItem.value = -1;
-                },
-              ),
-              Expanded(
-                child: Text(
-                  reciterName,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-            ],
-          ),
-          // const Divider(
-          //   height: 1,
-          //   color: Colors.black87,
-          // ),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(10),
-              separatorBuilder: (_, __) => const Divider(
-                height: 1,
-                color: Colors.grey,
-              ),
-              itemCount: surahList.length,
-              itemBuilder: (BuildContext context, int index) {
-                final file = surahList[index];
-                final length = file.length();
-
-                return ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        file.path.split('/').last,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontSize: 21,
-                            ),
-                      ),
-                      Text('size:' + '${13.5}'),
-                    ],
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_forever, color: Colors.redAccent),
-                    onPressed: () async {
-                      if (index >= surahList.length) return; //safety check
-
-                      final fileToDelete = surahList[index];
-                      if (await fileToDelete.exists()) {
-                        await fileToDelete.delete();
-                      }
-                      if (surahList.length == 1) {
-                        surahList.clear();
-                        controller.downloads.remove(currentReciter.key);
-                        controller.selectedReciterItem.value =
-                            -1; //returns to the reciters list
-                      } else {
-                        surahList.removeAt(index);
-                        controller.downloads[reciterName] =
-                            List<File>.from(surahList);
-                      }
-                    },
-                  ),
-                  onTap: () async {},
-                );
+    return Column(
+      children: [
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                controller.selectedReciterItem.value = -1;
               },
             ),
+            Expanded(
+              child: Text(
+                reciterName,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+          ],
+        ),
+        // const Divider(
+        //   height: 1,
+        //   color: Colors.black87,
+        // ),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.all(10),
+            separatorBuilder: (_, __) => const Divider(
+              height: 1,
+              color: Colors.grey,
+            ),
+            itemCount: surahList.length,
+            itemBuilder: (BuildContext context, int index) {
+              final file = surahList[index];
+              final length = file.length();
+
+              return ListTile(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      file.path.split('/').last,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontSize: 21,
+                          ),
+                    ),
+                    Text('size:' + '${13.5}'),
+                  ],
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_forever, color: Colors.redAccent),
+                  onPressed: () async {
+                    if (index >= surahList.length) return; //safety check
+
+                    final fileToDelete = surahList[index];
+                    if (await fileToDelete.exists()) {
+                      await fileToDelete.delete();
+                    }
+                    if (surahList.length == 1) {
+                      surahList.clear();
+                      controller.downloads.remove(currentReciter.key);
+                      controller.selectedReciterItem.value =
+                          -1; //returns to the reciters list
+                    } else {
+                      surahList.removeAt(index);
+                      controller.downloads[reciterName] = List<File>.from(surahList);
+                    }
+                  },
+                ),
+                onTap: () async {},
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
