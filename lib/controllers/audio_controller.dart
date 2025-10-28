@@ -62,6 +62,8 @@ class AudioController extends GetxController {
 
       if (repeatPlaying.isTrue) {
         playNew();
+      } else if (playlistMode.value == 1) {
+        playNextInQueue();
       }
     });
   }
@@ -220,6 +222,11 @@ class AudioController extends GetxController {
 
   void toggleRepeat() {
     repeatPlaying.value = !repeatPlaying.value;
+    if (repeatPlaying.isTrue &&
+        (playlistMode.value == 1 || playlistMode.value == 2)) {
+      playlistMode.value = 0;
+      playlistModeIcon.value = Icons.playlist_remove;
+    }
   }
 
   void togglePlaylist() {
@@ -227,6 +234,7 @@ class AudioController extends GetxController {
       case 0:
         playlistMode.value = 1;
         playlistModeIcon.value = Icons.playlist_play;
+        repeatPlaying.value = repeatPlaying.isTrue ? false : false;
         break;
       case 1:
         playlistMode.value = 2;
@@ -237,5 +245,22 @@ class AudioController extends GetxController {
         playlistModeIcon.value = Icons.playlist_remove;
         break;
     }
+
+    if (playlistMode.value == 1) {
+      ///TODO: Queue play all next surahs for the selected reciter
+    }
+  }
+
+  /// When the playlist mode is active (playlistMode == 1),
+  ///after the current surah finishes, your AudioController should:
+  ///Find the index of the current surah in surahNames.
+  /// Get the next surah in that list.
+  ///Set it as the new selectedSurah.
+  /// Automatically call playNew().
+  void playNextInQueue() {
+    final currentSurahIndex = surahNames.indexOf(selectedSurah.value);
+    final nextSurah = surahNames[(currentSurahIndex + 1) % surahNames.length];
+    selectedSurah.value = nextSurah;
+    playNew();
   }
 }
