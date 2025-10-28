@@ -35,6 +35,10 @@ class AudioController extends GetxController {
 
   var repeatPlaying = false.obs;
 
+  var playlistMode = 0
+      .obs; //0 => no_playlist (default), 1 => queue all next surah for the selected reciter, 2 => personalized/custom queue
+  var playlistModeIcon = Icons.playlist_remove.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -216,5 +220,22 @@ class AudioController extends GetxController {
 
   void toggleRepeat() {
     repeatPlaying.value = !repeatPlaying.value;
+  }
+
+  void togglePlaylist() {
+    switch (playlistMode.value) {
+      case 0:
+        playlistMode.value = 1;
+        playlistModeIcon.value = Icons.playlist_play;
+        break;
+      case 1:
+        playlistMode.value = 2;
+        playlistModeIcon.value = Icons.playlist_add;
+        break;
+      case 2:
+        playlistMode.value = 0;
+        playlistModeIcon.value = Icons.playlist_remove;
+        break;
+    }
   }
 }

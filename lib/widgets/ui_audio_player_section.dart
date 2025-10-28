@@ -62,6 +62,14 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                   children: [
                     Row(
                       children: [
+                        Obx(
+                          () => IconButton(
+                            onPressed: () {
+                              audioCtrl.togglePlaylist();
+                            },
+                            icon: Icon(audioCtrl.playlistModeIcon.value),
+                          ),
+                        ),
                         DownloadButton(),
                         IconButton(
                           onPressed: () {},
