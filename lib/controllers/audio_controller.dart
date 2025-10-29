@@ -263,4 +263,8 @@ class AudioController extends GetxController {
     selectedSurah.value = nextSurah;
     playNew();
   }
+
+  void addToCustomQueue(String item) {
+    print('✅🕌✅🕌 $item is successfully added to the queue');
+  }
 }

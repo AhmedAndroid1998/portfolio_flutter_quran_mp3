@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/presented_section_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
@@ -7,6 +8,7 @@ import 'package:quran_mp3/widgets/reciter_list_widget.dart';
 import 'package:quran_mp3/widgets/surah_list_widget.dart';
 import 'package:quran_mp3/widgets/ui_audio_player_section.dart';
 
+import '../controllers/audio_controller.dart';
 import '../controllers/downloads_list_controler.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -124,20 +126,72 @@ Widget buildListView({
       itemBuilder: (context, index) {
         final item = list[index];
 
-        return ListTile(
-            title: Text(
-              isRecitersList ? item : '${surahNames.indexOf(item) + 1}\t\t\t$item',
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                fontSize: 18,
+        ///setting the popup menu on ListTile's onLongPress wasn't
+        ///positioned correctly, that's why I needed GestureDetector
+        ///along with Builder's context to position it properly (underneath)
+        return Builder(builder: (context) {
+          return GestureDetector(
+            onLongPress:
+                isRecitersList ? null : () => _showSurahPopupMenu(context, item),
+            child: ListTile(
+              title: Text(
+                isRecitersList ? item : '${surahNames.indexOf(item) + 1}\t\t\t$item',
+                textDirection: TextDirection.rtl,
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
               ),
+              //we compared with value instead of index, because index
+              //will not match the correct item due to shortening & re-ordering caused by the filter to to the filteredList
+              tileColor: selectedItem == item ? Colors.blue : null,
+              onTap: () => onTap(index),
             ),
-            //we compared with value instead of index, because index
-            //will not match the correct item due to shortening & re-ordering caused by the filter to to the filteredList
-            tileColor: selectedItem == item ? Colors.blue : null,
-            onTap: () => onTap(index)
-
-            /// Later: play audio from the API data
-            );
+          );
+        });
       });
+}
+
+/// Extracted popup menu method
+void _showSurahPopupMenu(BuildContext context, String surahName) {
+  final audioCtrl = Get.find<AudioController>();
+  if (audioCtrl.selectedReciter.isEmpty) {
+    Fluttertoast.showToast(
+      msg: "رجاء، اختر الشيخ أولا",
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.redAccent,
+    );
+    return;
+  }
+
+  final RenderBox renderBox = context.findRenderObject() as RenderBox;
+  final Offset offset = renderBox.localToGlobal(Offset.zero);
+  final Size size = renderBox.size;
+
+  showMenu(
+    context: context,
+    position: RelativeRect.fromLTRB(
+      offset.dx,
+      offset.dy + size.height,
+      offset.dx + size.width,
+      offset.dy,
+    ),
+    items: [
+      PopupMenuItem(
+        value: 1,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FittedBox(child: Text("قائمة الإستماع")),
+            SizedBox(width: 5),
+            Icon(Icons.playlist_add),
+          ],
+        ),
+      ),
+    ],
+  ).then((value) {
+    // Handle menu selection
+    if (value == 1) {
+      audioCtrl.addToCustomQueue(surahName);
+    }
+  });
 }
