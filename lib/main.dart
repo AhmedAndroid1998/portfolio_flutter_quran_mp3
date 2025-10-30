@@ -3,8 +3,7 @@ import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
 import 'package:quran_mp3/controllers/download_controller.dart';
 import 'package:quran_mp3/controllers/downloads_list_controler.dart';
-
-import 'screens/home_page.dart';
+import 'package:quran_mp3/screens/home_page.dart';
 
 void main() {
   // Register the controllers globally once

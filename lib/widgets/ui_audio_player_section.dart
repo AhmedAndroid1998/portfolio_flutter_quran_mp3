@@ -4,6 +4,7 @@ import 'package:quran_mp3/controllers/audio_controller.dart';
 import 'package:quran_mp3/widgets/download_button.dart';
 
 import '../core/custom_repeat_off_icon.dart';
+import 'playlist_queue_widget.dart';
 
 class AudioPlayerSection extends StatefulWidget {
   const AudioPlayerSection({super.key});
@@ -130,6 +131,41 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
             ],
           ),
         ),
+        Positioned(
+          top: -25,
+          right: 10,
+          child: IconButton(
+            onPressed: () {
+              final renderBox = context.findRenderObject() as RenderBox;
+              final offset = renderBox.localToGlobal(Offset.zero);
+
+              List<PlaylistItem> list = [
+                PlaylistItem(
+                    suraNumber: "1",
+                    suraName: "الفاتحة",
+                    reciterName: "أبو بكر الشاطري"),
+                PlaylistItem(
+                    suraNumber: "2",
+                    suraName: "البقرة",
+                    reciterName: "أحمد بن علي العجمي"),
+              ];
+
+              showPlaylistPopupMenuOverlay(
+                context,
+                list,
+                () => setState(() {
+                  list.clear();
+                }),
+                offset,
+              );
+            },
+            icon: Icon(
+              Icons.playlist_add_circle_rounded,
+              color: Colors.deepPurpleAccent,
+              size: 40,
+            ),
+          ),
+        )
       ],
     );
   }

@@ -39,6 +39,8 @@ class AudioController extends GetxController {
       .obs; //0 => no_playlist (default), 1 => queue all next surah for the selected reciter, 2 => personalized/custom queue
   var playlistModeIcon = Icons.playlist_remove.obs;
 
+  var customPlaylist = <String, String>{}.obs;
+
   @override
   void onInit() {
     super.onInit();
