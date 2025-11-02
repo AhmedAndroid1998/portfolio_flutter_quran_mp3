@@ -5,8 +5,11 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
 import 'package:quran_mp3/services/reciters_service.dart';
+import 'package:quran_mp3/widgets/playlist_queue_widget.dart';
 
 import 'download_controller.dart';
+
+enum PlaylistMode { cancel, nextFromSelectedReciter, custom }
 
 class AudioController extends GetxController {
   var selectedSurah = ''.obs;
@@ -35,11 +38,11 @@ class AudioController extends GetxController {
 
   var repeatPlaying = false.obs;
 
-  var playlistMode = 0
+  var playlistMode = PlaylistMode.cancel
       .obs; //0 => no_playlist (default), 1 => queue all next surah for the selected reciter, 2 => personalized/custom queue
   var playlistModeIcon = Icons.playlist_remove.obs;
 
-  var customPlaylist = <String, String>{}.obs;
+  var customPlaylist = <PlaylistItem>[].obs;
 
   @override
   void onInit() {
@@ -64,9 +67,9 @@ class AudioController extends GetxController {
 
       if (repeatPlaying.isTrue) {
         playNew();
-      } else if (playlistMode.value == 1) {
-        playNextInQueue();
-      }
+      } else if (playlistMode.value == PlaylistMode.nextFromSelectedReciter) {
+        playNextForSelectedReciter();
+      } else if (playlistMode.value == PlaylistMode.custom) {}
     });
   }
 
@@ -225,31 +228,28 @@ class AudioController extends GetxController {
   void toggleRepeat() {
     repeatPlaying.value = !repeatPlaying.value;
     if (repeatPlaying.isTrue &&
-        (playlistMode.value == 1 || playlistMode.value == 2)) {
-      playlistMode.value = 0;
+        (playlistMode.value == PlaylistMode.nextFromSelectedReciter ||
+            playlistMode.value == PlaylistMode.custom)) {
+      playlistMode.value = PlaylistMode.cancel;
       playlistModeIcon.value = Icons.playlist_remove;
     }
   }
 
   void togglePlaylist() {
     switch (playlistMode.value) {
-      case 0:
-        playlistMode.value = 1;
+      case PlaylistMode.cancel:
+        playlistMode.value = PlaylistMode.nextFromSelectedReciter;
         playlistModeIcon.value = Icons.playlist_play;
         repeatPlaying.value = repeatPlaying.isTrue ? false : false;
         break;
-      case 1:
-        playlistMode.value = 2;
+      case PlaylistMode.nextFromSelectedReciter:
+        playlistMode.value = PlaylistMode.custom;
         playlistModeIcon.value = Icons.playlist_add;
         break;
-      case 2:
-        playlistMode.value = 0;
+      case PlaylistMode.custom:
+        playlistMode.value = PlaylistMode.cancel;
         playlistModeIcon.value = Icons.playlist_remove;
         break;
-    }
-
-    if (playlistMode.value == 1) {
-      ///TODO: Queue play all next surahs for the selected reciter
     }
   }
 
@@ -259,7 +259,7 @@ class AudioController extends GetxController {
   /// Get the next surah in that list.
   ///Set it as the new selectedSurah.
   /// Automatically call playNew().
-  void playNextInQueue() {
+  void playNextForSelectedReciter() {
     final currentSurahIndex = surahNames.indexOf(selectedSurah.value);
     final nextSurah = surahNames[(currentSurahIndex + 1) % surahNames.length];
     selectedSurah.value = nextSurah;
@@ -267,6 +267,11 @@ class AudioController extends GetxController {
   }
 
   void addToCustomQueue(String item) {
+    final currentSurahIndex = surahNames.indexOf(item);
+    customPlaylist.add(PlaylistItem(
+        suraNumber: currentSurahIndex.toString(),
+        suraName: item,
+        reciterName: selectedReciter.value));
     print('✅🕌✅🕌 $item is successfully added to the queue');
   }
 }

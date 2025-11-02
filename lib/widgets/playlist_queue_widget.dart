@@ -50,8 +50,6 @@ void showPlaylistPopupMenuOverlay(
   Offset position, // button position (from GestureDetector)
 ) {
   // 🧼 Clean up any existing popup before creating a new one
-  _currentPlaylistPopup?.remove();
-  _currentPlaylistPopup = null;
 
   final overlay = Overlay.of(context);
 
@@ -62,7 +60,7 @@ void showPlaylistPopupMenuOverlay(
         GestureDetector(
           onTap: () {
             _currentPlaylistPopup?.remove();
-            _currentPlaylistPopup = null;
+            _currentPlaylistPopup?.dispose();
           },
           behavior: HitTestBehavior.translucent,
           child: Container(
@@ -119,21 +117,34 @@ Widget _QueueList(List<PlaylistItem> items) {
         ),
       ],
     ),
-    child: ListView.builder(
-      padding: EdgeInsets.zero,
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return ListTile(
-          title: Text('${item.suraNumber}\t\t${item.suraName}'),
-          subtitle:
-              Text(item.reciterName, style: TextStyle(color: Colors.grey[700])),
-          onTap: () {
-            _currentPlaylistPopup?.remove();
-          },
-        );
-      },
-    ),
+    child: items.isEmpty
+        ? const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text(
+              'لا توجد سور في قائمة الإستماع. يمكنك إضافة السور إلى قائمة الإستماع عن طريق ضغطة مطولة على السورة',
+              style: TextStyle(
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+          )
+        : ListView.builder(
+            padding: EdgeInsets.zero,
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return ListTile(
+                title: Text('${item.suraNumber}\t\t${item.suraName}'),
+                subtitle: Text(item.reciterName,
+                    style: TextStyle(color: Colors.grey[700])),
+                onTap: () {
+                  items.removeAt(index);
+                  _currentPlaylistPopup?.markNeedsBuild();
+                },
+              );
+            },
+          ),
   );
 }
 
@@ -164,7 +175,7 @@ Widget _FloatingFooterRow(List<PlaylistItem> items, VoidCallback onClear) {
             icon: const Icon(Icons.delete_sweep, color: Colors.white),
             onPressed: () {
               items.clear();
-              onClear();
+              _currentPlaylistPopup?.markNeedsBuild();
             },
           ),
         ],

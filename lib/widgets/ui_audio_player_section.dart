@@ -104,6 +104,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _MaterialCircleButton(
+                backgroundColor: Colors.blue.shade900,
                 icon: Icons.forward_10,
                 onPressed: () {
                   audioCtrl.seekForward();
@@ -112,10 +113,11 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
               const SizedBox(width: 5),
               Obx(
                 () => _MaterialCircleButton(
+                  backgroundColor: Colors.blue.shade900,
                   icon: audioCtrl.playIcon.value,
                   radius: 28,
                   elevation: 10,
-                  color: Colors.purpleAccent,
+                  shadowColor: Colors.red,
                   onPressed: () async {
                     audioCtrl.togglePlayback();
                   },
@@ -123,6 +125,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
               ),
               const SizedBox(width: 5),
               _MaterialCircleButton(
+                backgroundColor: Colors.blue.shade900,
                 icon: Icons.replay_10,
                 onPressed: () {
                   audioCtrl.seekBackward();
@@ -132,38 +135,41 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
           ),
         ),
         Positioned(
-          top: -25,
+          top: -16,
           right: 10,
-          child: IconButton(
-            onPressed: () {
-              final renderBox = context.findRenderObject() as RenderBox;
-              final offset = renderBox.localToGlobal(Offset.zero);
+          child: Obx(
+            () {
+              if (audioCtrl.playlistMode.value == PlaylistMode.custom) {
+                return _MaterialCircleButton(
+                    backgroundColor: Colors.blue.shade900,
+                    onPressed: () {
+                      final renderBox = context.findRenderObject() as RenderBox;
+                      final offset = renderBox.localToGlobal(Offset.zero);
 
-              List<PlaylistItem> list = [
-                PlaylistItem(
-                    suraNumber: "1",
-                    suraName: "الفاتحة",
-                    reciterName: "أبو بكر الشاطري"),
-                PlaylistItem(
-                    suraNumber: "2",
-                    suraName: "البقرة",
-                    reciterName: "أحمد بن علي العجمي"),
-              ];
+                      // List<PlaylistItem> list = [
+                      //   PlaylistItem(
+                      //       suraNumber: "1",
+                      //       suraName: "الفاتحة",
+                      //       reciterName: "أبو بكر الشاطري"),
+                      //   PlaylistItem(
+                      //       suraNumber: "2",
+                      //       suraName: "البقرة",
+                      //       reciterName: "أحمد بن علي العجمي"),
+                      // ];
 
-              showPlaylistPopupMenuOverlay(
-                context,
-                list,
-                () => setState(() {
-                  list.clear();
-                }),
-                offset,
-              );
+                      showPlaylistPopupMenuOverlay(
+                        context,
+                        audioCtrl.customPlaylist,
+                        () => audioCtrl.customPlaylist.clear(),
+                        offset,
+                      );
+                    },
+                    icon: Icons.playlist_add,
+                    shadowColor: Colors.deepPurple,
+                    radius: 20);
+              }
+              return Container();
             },
-            icon: Icon(
-              Icons.playlist_add_circle_rounded,
-              color: Colors.deepPurpleAccent,
-              size: 40,
-            ),
           ),
         )
       ],
@@ -176,20 +182,28 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
       required void Function()? onPressed,
       double radius = 24,
       double elevation = 7,
-      Color color = Colors.black}) {
+      Color? backgroundColor,
+      Color shadowColor = Colors.black}) {
     return Material(
       elevation: elevation,
-      shadowColor: color,
+      shadowColor: shadowColor,
       shape: CircleBorder(),
-      child: _CircleButton(icon: icon, onPressed: onPressed, radius: radius),
+      child: _CircleButton(
+          icon: icon,
+          onPressed: onPressed,
+          radius: radius,
+          backgroundColor: backgroundColor),
     );
   }
 
   Widget _CircleButton(
-      {required IconData icon, void Function()? onPressed, double radius = 24}) {
+      {required IconData icon,
+      void Function()? onPressed,
+      double radius = 24,
+      Color? backgroundColor}) {
     return CircleAvatar(
       radius: radius,
-      backgroundColor: Colors.blue.shade900,
+      backgroundColor: backgroundColor,
       child: IconButton(
         onPressed: onPressed,
         icon: Icon(
