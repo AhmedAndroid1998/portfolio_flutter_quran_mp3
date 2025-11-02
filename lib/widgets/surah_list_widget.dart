@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/audio_controller.dart';
+import 'package:quran_mp3/controllers/download_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
 import 'package:quran_mp3/screens/home_page.dart';
 
@@ -74,8 +75,10 @@ class _SurahListWidgetState extends State<SurahListWidget> {
 }
 
 /// Extracted popup menu method
-void showSurahOptionsMenu(BuildContext context, String surahName) {
+Future<void> showSurahOptionsMenu(BuildContext context, String surahName) async {
   final audioCtrl = Get.find<AudioController>();
+  final downloadCtrl = Get.find<DownloadController>();
+
   if (audioCtrl.selectedReciter.isEmpty) {
     Fluttertoast.showToast(
       msg: "رجاء، اختر الشيخ أولا",
@@ -85,10 +88,15 @@ void showSurahOptionsMenu(BuildContext context, String surahName) {
     return;
   }
 
+  // Now it's safe to do async work
+  await downloadCtrl.checkIfDownloaded(audioCtrl.selectedReciter.value, surahName);
+  final isAlreadyDownloaded = downloadCtrl.isDownloaded.value;
+
   final RenderBox renderBox = context.findRenderObject() as RenderBox;
   final Offset offset = renderBox.localToGlobal(Offset.zero);
   final Size size = renderBox.size;
 
+  // And now show the menu
   showMenu(
     context: context,
     position: RelativeRect.fromLTRB(
@@ -99,21 +107,52 @@ void showSurahOptionsMenu(BuildContext context, String surahName) {
     ),
     items: [
       PopupMenuItem(
+        padding: EdgeInsets.all(5),
         value: 1,
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            FittedBox(child: Text("قائمة الإستماع")),
-            SizedBox(width: 5),
+            Text("أضف لقائمة الإستماع"),
+            SizedBox(width: 10),
             Icon(Icons.playlist_add),
           ],
         ),
       ),
+      PopupMenuItem(
+        padding: EdgeInsets.all(5),
+        value: 2,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text("مشاركة"),
+            SizedBox(width: 10),
+            Icon(Icons.share),
+          ],
+        ),
+      ),
+      PopupMenuItem(
+        padding: EdgeInsets.all(5),
+        value: 3,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            isAlreadyDownloaded ? Text("حذف") : Text("تحميل"),
+            SizedBox(width: 10),
+            isAlreadyDownloaded ? Icon(Icons.delete) : Icon(Icons.download)
+          ],
+        ),
+      ),
     ],
-  ).then((value) {
+  ).then((value) async {
     // Handle menu selection
     if (value == 1) {
       audioCtrl.addToCustomQueue(surahName);
+    } else if (value == 2) {
+    } else if (value == 3) {
+      isAlreadyDownloaded
+          ? await downloadCtrl.deleteFile(audioCtrl.selectedReciter.value, surahName)
+          : await downloadCtrl.downloadFile(audioCtrl.getAudioLink(surahName)!,
+              audioCtrl.selectedReciter.value, surahName);
     }
   });
 }

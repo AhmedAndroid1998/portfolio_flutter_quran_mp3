@@ -164,16 +164,16 @@ class AudioController extends GetxController {
       hasFinishedLoading.value = false;
       choiceText.value = 'جاري التحميل البيانات ...';
       timing.value = '.. / ..';
-      audioSource = getAudioLink()!;
+      audioSource = getAudioLink(selectedSurah.value)!;
       await _audioPlayer.play(UrlSource(audioSource));
     }
   }
 
-  String? getAudioLink() {
+  String? getAudioLink(String surah) {
     final server = RecitersService.recitations[selectedReciter.value];
 
-    if (server!.isNotEmpty && selectedSurah.isNotEmpty) {
-      final s = surahNames.indexOf(selectedSurah.value) + 1;
+    if (server!.isNotEmpty && surah.isNotEmpty) {
+      final s = surahNames.indexOf(surah) + 1;
       final surahString = s.toString().padLeft(3, '0');
       final audioUrl = '$server$surahString.mp3';
       print('✅✅✅ audioUrl: $audioUrl');

@@ -76,8 +76,10 @@ class DownloadButton extends StatelessWidget {
                   snackPosition: SnackPosition.BOTTOM);
               return;
             }
-            await downloadCtrl.downloadFile(audioCtrl.getAudioLink()!,
-                audioCtrl.selectedReciter.value, audioCtrl.selectedSurah.value);
+            await downloadCtrl.downloadFile(
+                audioCtrl.getAudioLink(audioCtrl.selectedSurah.value)!,
+                audioCtrl.selectedReciter.value,
+                audioCtrl.selectedSurah.value);
             await downloadsListCtrl.loadDownloads();
           },
           icon: const Icon(Icons.download),
