@@ -148,6 +148,7 @@ Future<void> showSurahOptionsMenu(BuildContext context, String surahName) async 
     if (value == 1) {
       audioCtrl.addToCustomQueue(surahName);
     } else if (value == 2) {
+
     } else if (value == 3) {
       isAlreadyDownloaded
           ? await downloadCtrl.deleteFile(audioCtrl.selectedReciter.value, surahName)

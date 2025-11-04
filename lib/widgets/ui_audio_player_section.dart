@@ -73,8 +73,10 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                         ),
                         DownloadButton(),
                         IconButton(
-                          onPressed: () {},
                           icon: const Icon(Icons.share),
+                          onPressed: () {
+                            audioCtrl.share(context);
+                          },
                         ),
                         Obx(
                           () => IconButton(

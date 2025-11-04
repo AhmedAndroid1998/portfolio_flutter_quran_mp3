@@ -7,6 +7,7 @@ import 'package:quran_mp3/data/surah_and_reciters_list.dart';
 import 'package:quran_mp3/services/reciters_service.dart';
 import 'package:quran_mp3/widgets/playlist_queue_widget.dart';
 
+import '../services/ui_utility_functions.dart';
 import 'download_controller.dart';
 
 enum PlaylistMode { cancel, nextFromSelectedReciter, custom }
@@ -273,5 +274,29 @@ class AudioController extends GetxController {
         suraName: item,
         reciterName: selectedReciter.value));
     print('✅🕌✅🕌 $item is successfully added to the queue');
+  }
+
+  Future<void> share(BuildContext context) async {
+    if (selectedSurah.isEmpty || selectedReciter.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "رجاء، اختر الشيخ والسورة",
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.redAccent,
+      );
+      return;
+    }
+
+    final isLocal = downloadCtrl.isDownloaded.value;
+    String? filePath;
+    String? link;
+    if (isLocal) {
+      final appDir = await getApplicationDocumentsDirectory();
+      filePath =
+          '${appDir.path}/QuranMp3/${selectedReciter.value}/${selectedSurah.value}.mp3';
+    }
+    link = getAudioLink(selectedSurah.value);
+
+    await UiFunctionsUtils.showShareDialog(context, selectedReciter.value,
+        selectedSurah.value, isLocal, filePath, link);
   }
 }
