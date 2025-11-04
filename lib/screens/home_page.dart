@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/presented_section_controller.dart';
@@ -17,26 +19,7 @@ class MyHomePage extends StatelessWidget {
     return WillPopScope(
       ///Allow us to override the back button behavior
       onWillPop: () async {
-        final isDownloads = presentedSectionCtrl.selectedSection.value == 1;
-
-        // Check if DownloadsSectionWidget wants to handle the back press first
-        if (isDownloads) {
-          final downloadsController = Get.find<DownloadsListController>();
-          if (!downloadsController.selectedReciterItem.isNegative) {
-            // inside a reciter’s surah list, go back to reciters list
-            downloadsController.selectedReciterItem.value = -1;
-            return false;
-          }
-        }
-
-        // Otherwise, handle at main level (go back to main section)
-        if (isDownloads) {
-          presentedSectionCtrl.toggleSection(); // go back to Reciters section
-          return false;
-        }
-
-        // Allow default system back if already in main Reciters section
-        return true;
+        return onBackButtonPressed();
       },
       child: Scaffold(
         backgroundColor: Colors.white.withOpacity(.8),
@@ -57,7 +40,13 @@ class MyHomePage extends StatelessWidget {
                   presentedSectionCtrl.toggleSection();
                 },
               ),
-            )
+            ),
+            IconButton(
+              icon: const Icon(Icons.power_settings_new),
+              onPressed: () {
+                exit(0); // This will completely close the app. Not recommended
+              },
+            ),
           ],
         ),
         body: Padding(
@@ -66,7 +55,7 @@ class MyHomePage extends StatelessWidget {
             children: [
               Expanded(
                 child: Obx(() {
-                  final isDownloads =
+                  final isDownloadsSection =
                       presentedSectionCtrl.selectedSection.value == 1;
 
                   return Stack(
@@ -75,7 +64,7 @@ class MyHomePage extends StatelessWidget {
                       AnimatedSlide(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
-                        offset: isDownloads
+                        offset: isDownloadsSection
                             ? const Offset(-1.1, 0.0) // slide out to left
                             : Offset.zero, // visible
                         child: const Row(
@@ -90,7 +79,7 @@ class MyHomePage extends StatelessWidget {
                       AnimatedSlide(
                         duration: const Duration(milliseconds: 400),
                         curve: Curves.easeInOut,
-                        offset: isDownloads
+                        offset: isDownloadsSection
                             ? Offset.zero // visible
                             : const Offset(1.1, 0.0), // slide out to right
                         child: DownloadsSectionWidget(),
@@ -106,6 +95,29 @@ class MyHomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool onBackButtonPressed() {
+    final isDownloads = presentedSectionCtrl.selectedSection.value == 1;
+
+    // Check if DownloadsSectionWidget wants to handle the back press first
+    if (isDownloads) {
+      final downloadsController = Get.find<DownloadsListController>();
+      if (!downloadsController.selectedReciterItem.isNegative) {
+        // inside a reciter’s surah list, go back to reciters list
+        downloadsController.selectedReciterItem.value = -1;
+        return false;
+      }
+    }
+
+    // Otherwise, handle at main level (go back to main section)
+    if (isDownloads) {
+      presentedSectionCtrl.toggleSection(); // go back to Reciters section
+      return false;
+    }
+
+    // Allow default system back if already in main Reciters section
+    return true;
   }
 }
 
