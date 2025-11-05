@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran_mp3/controllers/presented_section_controller.dart';
 import 'package:quran_mp3/data/surah_and_reciters_list.dart';
+import 'package:quran_mp3/screens/settings_screen.dart';
 import 'package:quran_mp3/widgets/downloads-section.dart';
 import 'package:quran_mp3/widgets/reciter_list_widget.dart';
 import 'package:quran_mp3/widgets/surah_list_widget.dart';
@@ -33,6 +34,17 @@ class MyHomePage extends StatelessWidget {
           ),
           centerTitle: true,
           actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SettingsScreen(),
+                  ),
+                );
+              },
+            ),
             Obx(
               () => IconButton(
                 icon: Icon(presentedSectionCtrl.selectSectionIcon.value),

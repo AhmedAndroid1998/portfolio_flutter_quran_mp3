@@ -106,18 +106,18 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _MaterialCircleButton(
-                backgroundColor: Colors.blue.shade900,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 icon: Icons.forward_10,
                 onPressed: () {
-                  audioCtrl.seekForward();
+                  audioCtrl.seekBackward();
                 },
               ),
               const SizedBox(width: 5),
               Obx(
                 () => _MaterialCircleButton(
-                  backgroundColor: Colors.blue.shade900,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   icon: audioCtrl.playIcon.value,
-                  radius: 28,
+                  radius: 54,
                   elevation: 10,
                   shadowColor: Colors.red,
                   onPressed: () async {
@@ -127,10 +127,10 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
               ),
               const SizedBox(width: 5),
               _MaterialCircleButton(
-                backgroundColor: Colors.blue.shade900,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 icon: Icons.replay_10,
                 onPressed: () {
-                  audioCtrl.seekBackward();
+                  audioCtrl.seekForward();
                 },
               ),
             ],
@@ -148,17 +148,6 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                       final renderBox = context.findRenderObject() as RenderBox;
                       final offset = renderBox.localToGlobal(Offset.zero);
 
-                      // List<PlaylistItem> list = [
-                      //   PlaylistItem(
-                      //       suraNumber: "1",
-                      //       suraName: "الفاتحة",
-                      //       reciterName: "أبو بكر الشاطري"),
-                      //   PlaylistItem(
-                      //       suraNumber: "2",
-                      //       suraName: "البقرة",
-                      //       reciterName: "أحمد بن علي العجمي"),
-                      // ];
-
                       showPlaylistPopupMenuOverlay(
                         context,
                         audioCtrl.customPlaylist,
@@ -168,7 +157,7 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
                     },
                     icon: Icons.playlist_add,
                     shadowColor: Colors.deepPurple,
-                    radius: 20);
+                    radius: 36);
               }
               return Container();
             },
@@ -182,37 +171,34 @@ class _AudioPlayerSectionState extends State<AudioPlayerSection> {
   Widget _MaterialCircleButton(
       {required IconData icon,
       required void Function()? onPressed,
-      double radius = 24,
+      double radius = 48,
       double elevation = 7,
       Color? backgroundColor,
       Color shadowColor = Colors.black}) {
     return Material(
-      elevation: elevation,
-      shadowColor: shadowColor,
-      shape: CircleBorder(),
-      child: _CircleButton(
-          icon: icon,
+        shadowColor: shadowColor,
+        elevation: elevation,
+        shape: const CircleBorder(),
+        child: SizedBox(
+          width: radius,
+          height: radius,
+          child: FloatingActionButton(
+            onPressed: onPressed,
+            child: Icon(icon, color: Colors.white),
+          ),
+        )
+        /*CircleAvatar(
+        radius: radius,
+        backgroundColor: backgroundColor,
+        child: IconButton(
           onPressed: onPressed,
-          radius: radius,
-          backgroundColor: backgroundColor),
-    );
-  }
-
-  Widget _CircleButton(
-      {required IconData icon,
-      void Function()? onPressed,
-      double radius = 24,
-      Color? backgroundColor}) {
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: backgroundColor,
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(
-          icon,
-          color: Colors.white,
+          icon: Icon(
+            icon,
+            color: Colors.white,
+          ),
         ),
       ),
-    );
+       */
+        );
   }
 }
