@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controllers/audio_controller.dart';
 
 class PlaylistItem {
   final String suraNumber;
@@ -102,49 +105,66 @@ void showPlaylistPopupMenuOverlay(
   overlay.insert(_currentPlaylistPopup!);
 }
 
-Widget _QueueList(List<PlaylistItem> items) {
-  return Container(
+Widget _QueueList(
+  List<PlaylistItem> items,
+) {
+  final audioCtrl = Get.find<AudioController>();
+
+  return SizedBox(
     width: 250,
     height: 400,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(18),
-      boxShadow: const [
-        BoxShadow(
-          color: Colors.black26,
-          blurRadius: 10,
-          offset: Offset(2, 4),
-        ),
-      ],
-    ),
-    child: items.isEmpty
-        ? const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Text(
-              'لا توجد سور في قائمة الإستماع. يمكنك إضافة السور إلى قائمة الإستماع عن طريق ضغطة مطولة على السورة',
-              style: TextStyle(
-                  color: Colors.grey,
-                  fontStyle: FontStyle.italic,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
+    //Use Card instead of Container, because Container's decoration prevent the highlighting (applied in ListTile's tileColor attr)
+    //to be in the background not in the foreground
+    child: Card(
+      elevation: 20,
+      shadowColor: Colors.deepOrange,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      child: items.isEmpty
+          ? const Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                'لا توجد سور في قائمة الإستماع. يمكنك إضافة السور إلى قائمة الإستماع عن طريق ضغطة مطولة على السورة',
+                style: TextStyle(
+                    color: Colors.grey,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+            )
+          :
+
+          ///TODO: 1. highlight the selected item
+          ///TODO 2. navigate to the selected reciter and surah
+          ///TODO 3. In PlayNew(), check for network availability before streaming
+          ///TODO 4. Add a confirmation dialog (AlertDialog) before deletion
+          ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+
+                return Obx(
+                  () {
+                    final isSelected =
+                        item.suraName == audioCtrl.selectedSurah.value &&
+                            item.reciterName == audioCtrl.selectedReciter.value;
+                    return ListTile(
+                      title: Text('${item.suraNumber}\t\t${item.suraName}'),
+                      subtitle: Text(item.reciterName,
+                          style: TextStyle(color: Colors.grey[700])),
+                      tileColor:
+                          isSelected ? const Color(0xFFD3923C) : Colors.transparent,
+                      onTap: () {
+                        audioCtrl.selectedReciter.value = item.reciterName;
+                        audioCtrl.selectedSurah.value = item.suraName;
+                        audioCtrl.playNew();
+                      },
+                    );
+                  },
+                );
+              },
             ),
-          )
-        : ListView.builder(
-            padding: EdgeInsets.zero,
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return ListTile(
-                title: Text('${item.suraNumber}\t\t${item.suraName}'),
-                subtitle: Text(item.reciterName,
-                    style: TextStyle(color: Colors.grey[700])),
-                onTap: () {
-                  items.removeAt(index);
-                  _currentPlaylistPopup?.markNeedsBuild();
-                },
-              );
-            },
-          ),
+    ),
   );
 }
 

@@ -147,8 +147,12 @@ Future<void> showSurahOptionsMenu(BuildContext context, String surahName) async 
     // Handle menu selection
     if (value == 1) {
       audioCtrl.addToCustomQueue(surahName);
+      //display the custom playlist and add this surah item to it
+      audioCtrl.playlistMode.value = PlaylistMode.custom;
+      audioCtrl.playlistModeIcon.value = Icons.playlist_add;
+      //turn off the repeat if it's turned on
+      audioCtrl.repeatPlaying.value = audioCtrl.repeatPlaying.isTrue ? false : false;
     } else if (value == 2) {
-
     } else if (value == 3) {
       isAlreadyDownloaded
           ? await downloadCtrl.deleteFile(audioCtrl.selectedReciter.value, surahName)

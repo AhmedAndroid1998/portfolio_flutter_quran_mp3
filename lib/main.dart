@@ -15,9 +15,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   final savedColor = await ThemeManager.loadColor();
-  runApp(GetMaterialApp(
-    home: QuranAudioLibraryApp(themeColor: savedColor),
-  ));
+  runApp(QuranAudioLibraryApp(themeColor: savedColor));
 }
 
 class QuranAudioLibraryApp extends StatelessWidget {
