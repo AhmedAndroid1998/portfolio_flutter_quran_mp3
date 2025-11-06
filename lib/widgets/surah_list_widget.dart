@@ -18,11 +18,23 @@ class _SurahListWidgetState extends State<SurahListWidget> {
   String? selectedSurah;
   List<String> filteredSurahList = [];
   final audioCtrl = Get.find<AudioController>();
+  final scrollCtrl = ScrollController();
 
   @override
   void initState() {
     super.initState();
     filteredSurahList = surahList;
+
+    ever(audioCtrl.selectedSurah, (selectedItem) {
+      print('ever() is called 👈 👈 👈 👈 👈 👈 👈 ');
+      if (selectedItem.isNotEmpty) {
+        final index = filteredSurahList.indexOf(selectedItem);
+        if (index != -1) {
+          scrollCtrl.animateTo(index * 56,
+              duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+        }
+      }
+    });
   }
 
   ///since the filtering logic for both reciters and surahs is the same,
@@ -65,7 +77,8 @@ class _SurahListWidgetState extends State<SurahListWidget> {
                   selectedItem: audioCtrl.selectedSurah.value,
                   onTap: (i) {
                     audioCtrl.setSurah(filteredSurahList[i]);
-                  }),
+                  },
+                  scrollController: scrollCtrl),
             ),
           )
         ],

@@ -18,6 +18,7 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
   String? selectedReciter;
   List<String> filteredReciterList = [];
   final audioCtrl = Get.find<AudioController>();
+  final scrollCtrl = ScrollController();
 
   @override
   void initState() {
@@ -81,7 +82,8 @@ class _ReciterListWidgetState extends State<ReciterListWidget> {
                       onTap: (i) {
                         audioCtrl.setReciter(filteredReciterList[i]);
                         print(RecitersService.recitations[filteredReciterList[i]]);
-                      }),
+                      },
+                      scrollController: scrollCtrl),
                 );
               }
             },

@@ -154,10 +154,14 @@ Widget _QueueList(
                           style: TextStyle(color: Colors.grey[700])),
                       tileColor:
                           isSelected ? const Color(0xFFD3923C) : Colors.transparent,
-                      onTap: () {
+                      onTap: () async {
                         audioCtrl.selectedReciter.value = item.reciterName;
                         audioCtrl.selectedSurah.value = item.suraName;
                         audioCtrl.playNew();
+
+                        // 🔄 Smooth scroll both lists
+                        // await audioCtrl.scrollToSurah(item.suraName);
+                        // await audioCtrl.scrollToReciter(item.suraName);
                       },
                     );
                   },

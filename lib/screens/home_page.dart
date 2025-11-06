@@ -133,18 +133,19 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-Widget buildListView({
-  required List<String> list,
-  required bool isRecitersList,
-  required String? selectedItem,
-  required void Function(int) onTap,
-}) {
+Widget buildListView(
+    {required List<String> list,
+    required bool isRecitersList,
+    required String? selectedItem,
+    required void Function(int) onTap,
+    ScrollController? scrollController}) {
   return ListView.separated(
       itemCount: list.length,
       separatorBuilder: (_, __) => const Divider(
             height: 1,
             color: Colors.grey,
           ),
+      controller: scrollController,
       itemBuilder: (context, index) {
         final item = list[index];
 
